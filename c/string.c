@@ -4,8 +4,8 @@
 
 size_t StrLen(const char* s);
 int StrCmp(const char* s1, const char* s2);
-char* strcpy(char* dest, const char* src);
-char* strncpy(char* dest, const char* src, size_t n);
+char* StrCpy(char* dest, const char* src);
+char* StrnCpy(char* dest, const char* src, size_t n);
 
 int main()
 {
@@ -18,7 +18,7 @@ int main()
 
 }
 
-char* strncpy(char* dest, const char* src, size_t n)
+char* StrnCpy(char* dest, const char* src, size_t n)
 {
 	assert(*src && *dest);
 
@@ -40,7 +40,7 @@ char* strncpy(char* dest, const char* src, size_t n)
 }
 
 
-char* strcpy(char* dest, const char* src)
+char* StrCpy(char* dest, const char* src)
 {
 	assert(*dest && *src);
 	char* pDest = dest;

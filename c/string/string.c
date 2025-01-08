@@ -4,22 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-
-char* StrChr(const char* str, int ch);
-size_t StrLen(const char* str);
-int StrCmp(const char* str1, const char* str2);
-int StrnCmp(const char* str1, const char* str2, size_t n);
-int StrCaseCmp(const char* str1, const char* str2);
-char* StrCpy(char* dest, const char* src);
-char* StrnCpy(char* dest, const char* src, size_t n);
-char* StrDup(const char* str);
-char* StrCat(char* dst, const char* src);
-char* StrnCat(char* dst, const char* src, size_t ssize);
-char* StrStr(const char* haystack, const char *needle);
-size_t StrSpn_oops(const char* str, const char* accept);
-size_t StrSpn(const char* str, const char* accept);
-int IsPalindrome(const char* str);
-char* SpaceReview(char* str);
+#include "string.h"
 
 int main()
 {
@@ -44,14 +29,37 @@ int main()
 	printf("StrStr hello and ll: %s", StrStr(str1, str4));
 	printf("strncmp ll and ll: %d", StrnCmp("llo","ll", 2));
 	printf("strspn: %lu\n",StrSpn("4096 bytes should be enough","0123456789"));
-	printf("is abc palindrome: %d\n", isPalindrome("abcb"));*/
-	/*char str1[] = "hi hi    ";*/
-	/*printf("spaceReview on: hi  hi: %s", SpaceReview(str1));*/
+	printf("is abc palindrome: %d\n", isPalindrome("abcb"));
+	char str1[] = "hi hi    ";
+	printf("spaceReview on: hi  hi: %s", SpaceReview(str1));
 	printf("strspn hello: %lu", StrSpn("hello", "he"));
+	*/
+	char str1[] = "abcba";
+	printf("is abcba palindrome: %d\n", IsPalindrome(str1)); 
+	/*IsPalindrome("abcba");*/
 	return 0;
 
 }
 
+/* Reviewed By: Denis
+ */
+int IsPalindrome(const char* str)
+{
+	const char* p_str_end = str + StrLen(str) - 1; /*-1 to be on last character instead of \0*/
+	assert(NULL != str);
+	
+	while(str < p_str_end)
+	{
+		if(*str != *p_str_end)
+		{
+			return 0;
+		}
+		++str;
+		--p_str_end;
+	}
+
+	return 1;
+}
 
 /* Reviewed By: Liel & Denis
  * removes extra white spaces from string
@@ -92,26 +100,6 @@ char* SpaceReview(char* str)
 	}
 
 	return str;
-}
-
-/* Reviewed By: Denis
- */
-int IsPalindrome(const char* str)
-{
-	const char* p_str_end = str + StrLen(str) - 1; /*-1 to be on last character instead of \0*/
-	assert(NULL != str);
-
-	while(str < p_str_end)
-	{
-		if(*str != *p_str_end)
-		{
-			return 0;
-		}
-		++str;
-		--p_str_end;
-	}
-
-	return 1;
 }
 
 /* Reviewed By: Denis
@@ -365,7 +353,7 @@ int StrCaseCmp(const char* str1, const char* str2)
 /*reviewed by Denis*/
 size_t StrLen(const char* str)
 {
-	const char* pStr;
+	const char* pStr = str;
 	assert(NULL != str);
 
 	while('\0' != *pStr) 

@@ -1,4 +1,4 @@
-#include <string.h> 
+#include <string.h> /* original string library functions */
 #include <assert.h> /* Assert macro */
 #include <stdio.h> /* printf */
 #include <stdlib.h> /* Dynamic allocations */

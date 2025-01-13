@@ -26,13 +26,15 @@ size_t StrLen(const char* str)
 char* StrDup(const char* str)
 {
 	char* dup = malloc((StrLen(str) + 1) * sizeof(char));
-	char* dup_start = StrCpy(dup, str);
+	char* dup_start;
 	assert(NULL != str);
 
 	if(NULL == dup)
 	{
 		return NULL;
 	}
+
+	dup_start = StrCpy(dup, str);
 	
 	return dup_start;
 }
@@ -60,16 +62,16 @@ int StrnCmp(const char* str1, const char* str2, size_t n)
 {
 	assert(NULL != str1 && NULL != str2);
 
+	if(0 == n)
+	{
+		return 0;
+	}
+
 	while (*str1 == *str2 && '\0' != *str1 && n > 0)
 	{
 		++str1;
 		++str2;
 		--n;
-	}
-
-		if(0 == n)
-	{
-		return 0;
 	}
 
 	return *str1 - *str2;

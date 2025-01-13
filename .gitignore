@@ -1,0 +1,13 @@
+# ignore swap files
+**/*.swp
+**/*.swo
+
+# ignore output files
+**/*.o
+
+# ignore corefiles
+**/core*
+**/vgcore*
+
+# ignore dummy files
+**/dummy.md

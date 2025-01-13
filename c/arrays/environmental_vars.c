@@ -4,6 +4,10 @@
 #include <ctype.h>
 #include <assert.h>
 
+size_t StrLen(const char* str);
+char* StrLowCaseCpy(char* dest, const char* src);
+char* StrLowCaseDup(const char* str);
+
 size_t StrLen(const char* str)
 {
 	const char* pStr = str;

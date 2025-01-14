@@ -1,0 +1,151 @@
+#include <stdio.h>
+
+long Pow2(unsigned int x, unsigned int y)
+{	
+	return x << y;
+}
+
+int IsPowOf2(unsigned int n)
+{
+	return 0 == ((n & (n - 1)) && (0 != n)); /* if n is not 0 and n&(n-1) is 0 its pow of 2*/
+}
+
+int IsPowOf2Loop(unsigned int n)
+{
+	size_t i;
+	int foundOne = 0;
+	
+	if(0 == n)
+	{
+		return 0;
+	}
+	
+	for(i = 0;i<32;++i) /* iterate through 32 (bit 0 to 31) bits to check they are 0*/
+	{	
+		if(1 == ((n>>i)&1)) /* n = ..32bits... 1 = ..00001 (also 32 bits). AND will give 1 only if first bit of n is 1 */
+		{
+			if(1 == foundOne)
+			{
+				return 0;
+			}		
+			
+			foundOne = 1;
+		}
+	}
+	return 1;
+}
+
+int AddOne(int num)
+{
+	int m = 1; 
+     
+	/* Flip all the set bits until we find a 0 */
+	while(num & m) /* while first(initially) bit of num is 1, make it 0, and move to next bit and check the same condition */
+	{ 
+        	num = num ^ m; 
+        	m <<= 1;
+	} 
+     
+    /* flip the rightmost 0 bit with XOR */
+	num = num ^ m;
+    return num; 
+}
+
+
+void Print3Bit(unsigned int* arr, size_t size)
+{
+	/* for each element, check if it has at least 3 bits on, if yes, print it */
+	size_t i, j;
+	int bit_count = 0;
+	
+	for(i = 0;i < size;++i)
+	{
+		for(j = 0;j<32;++j) /* go over all bits of current element */
+		{
+			if(1 == (1 & (arr[i] >> j))) /* does a lot of + i, replace with pointer? */ /* if AND with 1 is 1, the current iteration bit is on */
+			{
+				if(++bit_count >= 3)
+				{
+					printf("%u, ", arr[i]);
+					break;
+				}
+			}
+		}
+		bit_count = 0; /* zero out bitCount after */
+	}	
+	
+}
+
+unsigned int MirrorBitsLoop(unsigned int num)
+{
+    unsigned int result = 0;
+    int i;
+    for (i = 0; i < 32; ++i) 
+    {
+        if((num & (1 << i)))
+        {
+            result |= 1 << ((32 - 1) - i);
+        }
+    }
+    return result;
+}
+
+unsigned int MirrorBits(unsigned int num)
+{
+	/* without loop */
+}
+
+
+int Bits2And6(unsigned char byte)
+{
+	/*if(0 < (byte & 0x22))
+	{
+		return 1;
+	}
+	return 0;*/
+	
+	return (34 == (byte & 34)); /* 0 if */
+}
+
+int Bits2Or6(unsigned char byte)
+{
+	/*return ((2 == (byte&34)) || (6 == (byte&34)) || (34 == (byte&34));*/ /* non-zero if one of them is on */
+	
+	return (byte&34) > 0;
+}
+
+
+unsigned int ClosestDiv16(unsigned int num)
+{
+	return num & 0xF0;
+}
+
+void unsigned int XorSwap(unsigned int num1 unsigned num2)
+{
+	num1 = num1 ^ num2;
+	num2 = num1 ^ num2;
+	num1 = num1 ^ num2;
+}
+
+
+
+
+int main()
+{
+	/*rintf("%ld\n", Pow2(3,2));*/ /* 3 * 2^2 */
+	/*printf("%ld\n", Pow2(3,4));*/ /* 3 * 2^4 */
+	/*printf("%d\n", IsPowOf2(8));*/
+/*	printf("%d\n", IsPowOf2Loop(8));*/
+
+	/*printf("%d", IsPowOf2Loop(0));*/
+/*	printf("9 + 1 = %d", AddOne(9));*/
+
+	/*unsigned int arr[3] = { 7, 15, 0 };
+	Print3Bit(arr, 3);*/
+	
+	/*printf("%u", MirrorBits((unsigned int)num));*/
+	
+	/*printf("%d", Bits2Or6(34));*/
+	printf("%u", ClosestDiv16(17));
+	return 0;	
+}

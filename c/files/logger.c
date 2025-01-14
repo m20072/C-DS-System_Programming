@@ -4,6 +4,8 @@
 #include <stddef.h>
 #include <assert.h>
 
+/* reviewed by ori */
+
 typedef enum op
 {
 	REMOVE,

@@ -26,17 +26,14 @@ size_t StrLen(const char* str)
 char* StrDup(const char* str)
 {
 	char* dup = malloc((StrLen(str) + 1) * sizeof(char));
-	char* dup_start;
 	assert(NULL != str);
 
 	if(NULL == dup)
 	{
 		return NULL;
 	}
-
-	dup_start = StrCpy(dup, str);
 	
-	return dup_start;
+	return StrCpy(dup, str);
 }
 
 /* Reviewed By: Denis

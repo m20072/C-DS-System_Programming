@@ -39,22 +39,21 @@ int AddOne(int num)
 {
 	int m = 1; 
      
-	/* Flip all the set bits until we find a 0 */
-	while(num & m) /* while first(initially) bit of num is 1, make it 0, and move to next bit and check the same condition */
+	/* Flip all 1 bits until we find a 0, then flip that 0 to 1, mimicing a binary increment by 1 */
+	while(num & m) /* while current bit of num is 1, flip to 0, itirate until a 0 bit */
 	{ 
-        	num = num ^ m; 
-        	m <<= 1;
+        	num = num ^ m;  /*  */
+        	m <<= 1; /* next iteration mask next bit */
 	} 
      
     /* flip the rightmost 0 bit with XOR */
 	num = num ^ m;
     return num; 
-}
-
+} 	
 
 void Print3Bit(unsigned int* arr, size_t size)
 {
-	/* for each element, check if it has at least 3 bits on, if yes, print it */
+	/* for each element, check if it has at least 3 bits on, if true, print it */
 	size_t i, j;
 	int bit_count = 0;
 	
@@ -62,7 +61,7 @@ void Print3Bit(unsigned int* arr, size_t size)
 	{
 		for(j = 0;j<32;++j) /* go over all bits of current element */
 		{
-			if(1 == (1 & (arr[i] >> j))) /* does a lot of + i, replace with pointer? */ /* if AND with 1 is 1, the current iteration bit is on */
+			if(1 == (1 & (arr[i] >> j)))
 			{
 				if(++bit_count >= 3)
 				{
@@ -71,7 +70,7 @@ void Print3Bit(unsigned int* arr, size_t size)
 				}
 			}
 		}
-		bit_count = 0; /* zero out bitCount after */
+		bit_count = 0;
 	}	
 	
 }
@@ -93,25 +92,19 @@ unsigned int MirrorBitsLoop(unsigned int num)
 unsigned int MirrorBits(unsigned int num)
 {
 	/* without loop */
+	return num;
 }
 
 
 int Bits2And6(unsigned char byte)
 {
-	/*if(0 < (byte & 0x22))
-	{
-		return 1;
-	}
-	return 0;*/
 	
-	return (34 == (byte & 34)); /* 0 if */
+	return (0x22 == (byte & 0x22));
 }
 
 int Bits2Or6(unsigned char byte)
 {
-	/*return ((2 == (byte&34)) || (6 == (byte&34)) || (34 == (byte&34));*/ /* non-zero if one of them is on */
-	
-	return (byte&34) > 0;
+	return (byte & 0x22) > 0; /* 0x22 = 34 decimal */
 }
 
 
@@ -120,11 +113,11 @@ unsigned int ClosestDiv16(unsigned int num)
 	return num & 0xF0;
 }
 
-void unsigned int XorSwap(unsigned int num1 unsigned num2)
+void XorSwap(unsigned int* num1, unsigned int* num2)
 {
-	num1 = num1 ^ num2;
-	num2 = num1 ^ num2;
-	num1 = num1 ^ num2;
+	*num1 = *num1 ^ *num2;
+	*num2 = *num1 ^ *num2;
+	*num1 = *num1 ^ *num2;
 }
 
 
@@ -146,6 +139,13 @@ int main()
 	/*printf("%u", MirrorBits((unsigned int)num));*/
 	
 	/*printf("%d", Bits2Or6(34));*/
-	printf("%u", ClosestDiv16(17));
+	/*printf("%u", ClosestDiv16(48));*/
+	
+	/*unsigned int a = 5;
+	unsigned int b = 6;
+	XorSwap(&a,&b);
+	printf("a = %u, b = %u", a,b);*/
+	
+	
 	return 0;	
 }

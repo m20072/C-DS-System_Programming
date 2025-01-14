@@ -1,9 +1,10 @@
 #include <assert.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 size_t findNextAliveIndex(size_t* arr, size_t size, size_t index);
-size_t Josephnlogn(size_t* arr, size_t size);
-size_t Josephn(size_t* arr, size_t size);
+size_t Josephnlogn(size_t size);
+size_t Josephn(size_t size);
 
 size_t findNextAliveIndex(size_t* arr, size_t size, size_t index) /* receives the array starting from the point we're at on this moment */
 {
@@ -11,25 +12,20 @@ size_t findNextAliveIndex(size_t* arr, size_t size, size_t index) /* receives th
 
     do
     {
-        index = (index + 1)%size;
+        index = (index + 1)%size; /* next soldier */
     } while(0 != arr[index]); /* while didnt get to alive soldier */
 
     return index;
 }
 
-size_t Josephnlogn(size_t* arr, size_t size) /* n, n/2, n/4, n/8, n/16  ~=  n*log(n)*/
+/* Reviewed by Korin o(n*log(n)) */
+size_t Josephnlogn(size_t size) /* n, n/2, n/4, n/8, n/16  ~=  n*log(n)*/
 {
     int kill = 1;
     size_t current_index = 0;
     size_t next_index = 0;
-    size_t i;
+	size_t* arr = (size_t*)calloc(sizeof(size_t), size); /* calloc because 0 = alive */
 
-    assert(NULL != arr);
-
-    for(i = 0;i<size;++i)
-    {
-        arr[i] = 0; /* 0 = alive */
-    }
 
     while(1)
     {
@@ -43,7 +39,7 @@ size_t Josephnlogn(size_t* arr, size_t size) /* n, n/2, n/4, n/8, n/16  ~=  n*lo
 
         if(1 == kill)
         {
-            arr[next_index] = 1;
+			arr[next_index] = 1;
             kill = 0;
         }
         else
@@ -52,19 +48,21 @@ size_t Josephnlogn(size_t* arr, size_t size) /* n, n/2, n/4, n/8, n/16  ~=  n*lo
             kill = 1;
         }
     }
+    free(arr);
     return current_index;
 }
 
-size_t Josephn(size_t* arr, size_t size)
+
+/* Reviewed by Korin o(n) */
+size_t Josephn(size_t size)
 {
-    int kill = 1;
-    size_t current_index = 0;
-    size_t next_index;
-    size_t i;
+	size_t current_index = 0;
+	size_t next_index;
+	size_t i;
+    
+	size_t* arr = (size_t*)malloc(size * sizeof(size_t));
 
-    assert(NULL != arr);
-
-    for(i = 0;i<size;++i)
+    for(i = 0;i<size-1;++i)
     {
         arr[i] = i + 1;
     }
@@ -73,19 +71,13 @@ size_t Josephn(size_t* arr, size_t size)
 
     while(arr[current_index] != current_index)
     {
-        next_index = arr[current_index];
-
-        if(1 == kill)
-        {
-            arr[current_index] = arr[next_index]; /* arr[currentIndex] points to the alive soldier that the dying one points to */
-            kill = 0;
-        }
-        else
-        {
-            current_index = arr[current_index];
-            kill = 1;
-        }
+        next_index = arr[current_index]; /* next soldier alive is arr[current_index], so thats the next index */ /* who is next soldier alive */
+	arr[current_index] = arr[next_index]; /* change arr[current_index] so that it points to the one that the dying one is pointing to */ /* killing that next soldier */
+	current_index = arr[current_index]; /* make the current_index for the next iteration be that soldier that the dying one pointed to */ /* giving the sword to the following one alive */
+	
     }
+    
+    free(arr);
     return current_index;
 }
 
@@ -93,9 +85,9 @@ size_t Josephn(size_t* arr, size_t size)
 int main()
 {
     size_t size = 7;
-    size_t soldiers[7];
 
-    printf("for %lu soldiers, last alive is index: %lu\n", size, Josephnlogn(soldiers, size));
+	printf("for %lu soldiers, last alive is index: %lu\n", size, Josephn(size));
+	printf("for %lu soldiers, last alive is index: %lu\n", size, Josephnlogn(size));
 
     return 0;
 }

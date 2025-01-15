@@ -1,5 +1,6 @@
-# gcc compilation aliases: c89, c99, debug mode, release mode
+# gcc compilation aliases: c89, c89 without linking, c99, debug mode, release mode
 alias gd='gcc -ansi -pedantic-errors -Wall -Wextra -g'
+alias gdo='gcc -ansi -pedantic-errors -Wall -Wextra -g -c'
 alias gc='gcc -ansi -pedantic-errors -Wall -Wextra -DNDEBUG -o3'
 alias gd9='gcc -std=c99 -pedantic-errors -Wall -Wextra -g'
 alias gc9='gcc -std=c99 -pedantic-errors -Wall -Wextra -DNDEBUG -o3'

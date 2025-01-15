@@ -1,15 +1,22 @@
 #include <stdio.h>
 
+/* Reviewed by Omri */
+
+
+
+/* multiplies x by 2^y */
 long Pow2(unsigned int x, unsigned int y)
 {	
 	return x << y;
 }
 
+/* check if a number is a power of 2 */
 int IsPowOf2(unsigned int n)
 {
-	return 0 == ((n & (n - 1)) && (0 != n)); /* if n is not 0 and n&(n-1) is 0 its pow of 2*/
+	return 0 == ((0 == n) || (n & (n - 1))); /* if n is not 0 or n&(n-1) is 0 its pow of 2*/
 }
 
+/* check if a number is a power of 2 with a loop */
 int IsPowOf2Loop(unsigned int n)
 {
 	size_t i;
@@ -20,40 +27,38 @@ int IsPowOf2Loop(unsigned int n)
 		return 0;
 	}
 	
-	for(i = 0;i<32;++i) /* iterate through 32 (bit 0 to 31) bits to check they are 0*/
+	for(i = 0; i < 32; ++i) /* iterate through 32 (bit 0 to 31) bits to check they are 0*/
 	{	
-		if(1 == ((n>>i)&1)) /* n = ..32bits... 1 = ..00001 (also 32 bits). AND will give 1 only if first bit of n is 1 */
+		if(1 == ((n >> i) & 0x1)) /* AND with 0x1 will produce 1 only if current iteration bit of n is 1 */
 		{
 			if(1 == foundOne)
 			{
 				return 0;
-			}		
-			
+			}			
 			foundOne = 1;
 		}
 	}
 	return 1;
 }
 
-int AddOne(int num)
+/* increments number by one without arithmetic operators */
+unsigned int AddOne(unsigned int num)
 {
 	int m = 1; 
      
 	/* Flip all 1 bits until we find a 0, then flip that 0 to 1, mimicing a binary increment by 1 */
 	while(num & m) /* while current bit of num is 1, flip to 0, itirate until a 0 bit */
 	{ 
-        	num = num ^ m;  /*  */
+        	num = num ^ m;  /* the '1' bit and the '1' from m are in same position, XOR will flip it to 0 (1^1=0), keeping other bits same value (xor other bits with 0)*/
         	m <<= 1; /* next iteration mask next bit */
 	} 
      
-    /* flip the rightmost 0 bit with XOR */
-	num = num ^ m;
-    return num; 
+    return num ^ m;      /* flip the 0 bit with XOR (0^1=1), keeps other bits same value. (xor other bits wih 0) */
 } 	
 
+/* for each element, check if it has at least 3 bits on, if condition is met, print it. */
 void Print3Bit(unsigned int* arr, size_t size)
 {
-	/* for each element, check if it has at least 3 bits on, if true, print it */
 	size_t i, j;
 	int bit_count = 0;
 	
@@ -61,9 +66,9 @@ void Print3Bit(unsigned int* arr, size_t size)
 	{
 		for(j = 0;j<32;++j) /* go over all bits of current element */
 		{
-			if(1 == (1 & (arr[i] >> j)))
+			if(1 == (1 & (arr[i] >> j))) /* if current iteration bit is 1 */
 			{
-				if(++bit_count >= 3)
+				if(3 == ++bit_count)
 				{
 					printf("%u, ", arr[i]);
 					break;
@@ -83,7 +88,7 @@ unsigned int MirrorBitsLoop(unsigned int num)
     {
         if((num & (1 << i)))
         {
-            result |= 1 << ((32 - 1) - i);
+            result |= 1 << (31 - i);
         }
     }
     return result;
@@ -96,23 +101,29 @@ unsigned int MirrorBits(unsigned int num)
 	num = ((num & 0xF0F0F0F0) >> 4 | (num & 0x0F0F0F0F) << 4);
 	num = ((num & 0xCCCCCCCC) >> 2 | (num & 0x33333333) << 2);
 	num = ((num & 0xAAAAAAAA) >> 1 | (num & 0x55555555) << 1);	
-	return num;
+	return (num);
 }
 
 int Bits2And6(unsigned char byte)
 {	
-	return (0x22 == (byte & 0x22));
+	int result = -1;
+	result += byte & (1 << 1);
+	result += byte & (1 << 5);
+	return (result);
 }
 
 int Bits2Or6(unsigned char byte)
 {
-	return (byte & 0x22) > 0; /* 0x22 = 34 decimal */
+	int first_bit = byte & (1 << 1);
+	int second_bit = byte & (1 << 5);
+	
+	return (first_bit | second_bit)
 }
 
 
 unsigned int ClosestDiv16(unsigned int num)
 {
-	return num & 0xF0;
+	return (num & 0xFFFFFFF0); 
 }
 
 void XorSwap(unsigned int* num1, unsigned int* num2)
@@ -137,18 +148,19 @@ size_t numSetBitsLoop(unsigned int num)
 	return count;
 }
 
-
+/* yeah */
 size_t numSetBits(unsigned int num)
 {
-	num = ((num & 0xAAAAAAAA) >>1) + (num & 0x55555555);
-	num = ((num & 0xCCCCCCCC) >>2) + (num & 0x33333333);
-	num = ((num & 0xF0F0F0F0) >>4) + (num & 0xF0F0F0F);
-	num = ((num & 0xFF00FF00) >>8) + (num & 0xFF00FF);
-	num = ((num & 0xFFFF0000) >>16) + (num & 0xFFFF);	
+	num = ((num & 0xAAAAAAAA) >> 1) + (num & 0x55555555);
+	num = ((num & 0xCCCCCCCC) >> 2) + (num & 0x33333333);
+	num = ((num & 0xF0F0F0F0) >> 4) + (num & 0x0F0F0F0F);
+	num = ((num & 0xFF00FF00) >> 8) + (num & 0x00FF00FF);
+	num = ((num & 0xFFFF0000) >> 16) + (num & 0x0000FFFF);	
 	
 	return num;
 }
 
+/* prints bits of floating point value */
 void printFloatBits(float num)
 {
 	int i = 0;
@@ -162,9 +174,9 @@ void printFloatBits(float num)
 
 int main()
 {
-	/*rintf("%ld\n", Pow2(3,2));*/ /* 3 * 2^2 */
+	/*printf("%ld\n", Pow2(3,0));*/ /* 3 * 2^2 */
 	/*printf("%ld\n", Pow2(3,4));*/ /* 3 * 2^4 */
-	/*printf("%d\n", IsPowOf2(8));*/
+	/*printf("%d\n", IsPowOf2(0));*/
 /*	printf("%d\n", IsPowOf2Loop(8));*/
 
 	/*printf("%d", IsPowOf2Loop(0));*/
@@ -185,6 +197,6 @@ int main()
 	
 	/*printf("%lu", numSetBits(8));*/
 	
-	printFloatBits(5);
+	/*printFloatBits(5);*/
 	return 0;	
 }

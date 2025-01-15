@@ -66,22 +66,29 @@ int main(int argc, char **argv, char **envp)
 	(void)argc;
 	(void)argv;
 	
-	    while (NULL != envp[count])
-		{
-        	++count;
-		}
+	while (NULL != envp[count])
+	{
+		++count;
+	}
 
-		pStringsArr = (char**)malloc(count * sizeof(char*));
-
-		if(NULL == pStringsArr)
-		{
-			return -1;
-		}
+	pStringsArr = (char**)malloc(count * sizeof(char*));
+	if(NULL == pStringsArr)
+	{
+		return -1;
+	}
 
 	for(i = 0; i < count; ++i)
 	{
-		pStringsArr[i] = StrLowCaseDup(envp[i]);
+		pStringsArr[i] = StrLowCaseDup(envp[i]); /* hard to debug, seprate into functions */
+	}
+	
+	for(i = 0; i < count; ++i)
+	{
 		printf("%s\n", pStringsArr[i]);
+	}
+	
+	for(i = 0; i < count; ++i)
+	{
 		free(pStringsArr[i]);
 	}
 

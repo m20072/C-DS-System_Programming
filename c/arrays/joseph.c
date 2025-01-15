@@ -2,17 +2,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-size_t findNextAliveIndex(size_t* arr, size_t size, size_t index);
+size_t FindNextAliveIndex(size_t* arr, size_t size, size_t index);
 size_t Josephnlogn(size_t size);
 size_t Josephn(size_t size);
 
-size_t findNextAliveIndex(size_t* arr, size_t size, size_t index) /* receives the array starting from the point we're at on this moment */
+size_t FindNextAliveIndex(size_t* arr, size_t size, size_t index) /* receives the array starting from the point we're at on this moment */
 {
     assert(NULL != arr);
 
     do
     {
-        index = (index + 1)%size; /* next soldier */
+		index = (index + 1)%size; /* next soldier */
     } while(0 != arr[index]); /* while didnt get to alive soldier */
 
     return index;
@@ -25,7 +25,10 @@ size_t Josephnlogn(size_t size) /* n, n/2, n/4, n/8, n/16  ~=  n*log(n)*/
     size_t current_index = 0;
     size_t next_index = 0;
 	size_t* arr = (size_t*)calloc(sizeof(size_t), size); /* calloc because 0 = alive */
-
+	if(NULL == arr)
+	{
+		exit(1);
+	}
 
     while(1)
     {
@@ -59,8 +62,11 @@ size_t Josephn(size_t size)
 	size_t current_soldier = 0; /* current_index corresponds to the current soldier */
 	size_t next_soldier;
 	size_t i;
-    
 	size_t* arr = (size_t*)malloc(size * sizeof(size_t));
+	if(NULL == arr)
+	{
+		exit(1);
+	}
 
     for(i = 0;i<size-1;++i)
     {

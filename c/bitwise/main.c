@@ -91,14 +91,16 @@ unsigned int MirrorBitsLoop(unsigned int num)
 
 unsigned int MirrorBits(unsigned int num)
 {
-	/* without loop */
+	num = ((num & 0xFFFF0000) >> 16 | (num & 0x0000FFFF) << 16); /* turn off first 16 bits, shift last 16 bits to the right, OR with first 16 bits shifted 16 to the left (swap) */
+	num = ((num & 0xFF00FF00) >> 8 | (num & 0x00FF00FF) << 8);
+	num = ((num & 0xF0F0F0F0) >> 4 | (num & 0x0F0F0F0F) << 4);
+	num = ((num & 0xCCCCCCCC) >> 2 | (num & 0x33333333) << 2);
+	num = ((num & 0xAAAAAAAA) >> 1 | (num & 0x55555555) << 1);	
 	return num;
 }
 
-
 int Bits2And6(unsigned char byte)
-{
-	
+{	
 	return (0x22 == (byte & 0x22));
 }
 
@@ -120,7 +122,42 @@ void XorSwap(unsigned int* num1, unsigned int* num2)
 	*num1 = *num1 ^ *num2;
 }
 
+/* Reviewed by Ori,
+ * Counts the number of bits that are on in an unsigned int
+ */
+size_t numSetBitsLoop(unsigned int num)
+{
+	int i;
+	int count = 0;
+	
+	for(i = 0; i < 32; ++i)
+	{
+		count += (num >> i) & 0x1; /* if current iteration bit is 1, 1&1=1 (count += 1), otherwise 0&1=0 (count += 0) */
+	}
+	return count;
+}
 
+
+size_t numSetBits(unsigned int num)
+{
+	num = ((num & 0xAAAAAAAA) >>1) + (num & 0x55555555);
+	num = ((num & 0xCCCCCCCC) >>2) + (num & 0x33333333);
+	num = ((num & 0xF0F0F0F0) >>4) + (num & 0xF0F0F0F);
+	num = ((num & 0xFF00FF00) >>8) + (num & 0xFF00FF);
+	num = ((num & 0xFFFF0000) >>16) + (num & 0xFFFF);	
+	
+	return num;
+}
+
+void printFloatBits(float num)
+{
+	int i = 0;
+	for(i = 31; 0 <= i; --i)
+	{
+		printf("%d", (((int)num>>i) & 0x1));
+	}
+	printf("\n");
+}
 
 
 int main()
@@ -146,6 +183,8 @@ int main()
 	XorSwap(&a,&b);
 	printf("a = %u, b = %u", a,b);*/
 	
+	/*printf("%lu", numSetBits(8));*/
 	
+	printFloatBits(5);
 	return 0;	
 }

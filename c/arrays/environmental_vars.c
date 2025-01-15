@@ -1,8 +1,11 @@
-#include <stddef.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <ctype.h>
-#include <assert.h>
+#include <stddef.h> /* size_t */
+#include <stdlib.h> /* dynamic allocation */
+#include <stdio.h> /* printf */
+#include <ctype.h> /* tolower */
+#include <assert.h> /* assert */
+
+
+/* Reviewed by Ori */
 
 size_t StrLen(const char* str);
 char* StrLowCaseCpy(char* dest, const char* src);
@@ -21,6 +24,7 @@ size_t StrLen(const char* str)
 	return pStr - str;
 }
 
+/* Copies src into dest in lower case */
 char* StrLowCaseCpy(char* dest, const char* src)
 {
 	char* p_dest = dest;
@@ -37,6 +41,7 @@ char* StrLowCaseCpy(char* dest, const char* src)
 	return dest;
 }
 
+/* copies str in lowercase into a new allocated memory space */
 char* StrLowCaseDup(const char* str)
 {
 	char* dup = malloc((StrLen(str) + 1) * sizeof(char));
@@ -66,12 +71,14 @@ int main(int argc, char **argv, char **envp)
         	++count;
 		}
 
-		pStringsArr = (char**)malloc((count) * sizeof(char*));
+		pStringsArr = (char**)malloc(count * sizeof(char*));
 
 		if(NULL == pStringsArr)
+		{
 			return -1;
+		}
 
-	for(i = 0;i<count;++i)
+	for(i = 0; i < count; ++i)
 	{
 		pStringsArr[i] = StrLowCaseDup(envp[i]);
 		printf("%s\n", pStringsArr[i]);

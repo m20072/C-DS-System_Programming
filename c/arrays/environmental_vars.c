@@ -3,32 +3,25 @@
 #include <stdio.h> /* printf */
 #include <ctype.h> /* tolower */
 #include <assert.h> /* assert */
+#include <string.h> /* strlen */
 
 
 /* Reviewed by Ori */
-
-size_t StrLen(const char* str);
 char* StrLowCaseCpy(char* dest, const char* src);
 char* StrLowCaseDup(const char* str);
+void Print(const char* str);
 
-size_t StrLen(const char* str)
+
+void Print(const char* str)
 {
-	const char* pStr = str;
-	assert(NULL != str);
-
-	while('\0' != *pStr) 
-	{
-		++pStr;
-	}
-
-	return pStr - str;
+	printf("%s\n", str);
 }
 
 /* Copies src into dest in lower case */
 char* StrLowCaseCpy(char* dest, const char* src)
 {
-	char* p_dest = dest;
 	assert(NULL != dest && NULL != src);
+	char* p_dest = dest;
 
 	while('\0' != *src)
 	{
@@ -41,21 +34,19 @@ char* StrLowCaseCpy(char* dest, const char* src)
 	return dest;
 }
 
-/* copies str in lowercase into a new allocated memory space */
+/* copies str in lowercase into a new dynamically allocated memory space */
 char* StrLowCaseDup(const char* str)
 {
-	char* dup = malloc((StrLen(str) + 1) * sizeof(char));
-	
 	assert(NULL != str);
 
+	char* dup = (char*)malloc((strlen(str) + 1) * sizeof(char));
 	if(NULL == dup)
 	{
 		return NULL;
 	}
-	
+
 	return StrLowCaseCpy(dup, str);
 }
-
 
 int main(int argc, char **argv, char **envp)
 {
@@ -74,7 +65,7 @@ int main(int argc, char **argv, char **envp)
 	pStringsArr = (char**)malloc(count * sizeof(char*));
 	if(NULL == pStringsArr)
 	{
-		return -1;
+		exit(1);
 	}
 
 	for(i = 0; i < count; ++i)
@@ -84,7 +75,7 @@ int main(int argc, char **argv, char **envp)
 	
 	for(i = 0; i < count; ++i)
 	{
-		printf("%s\n", pStringsArr[i]);
+		Print(pStringsArr[i]);
 	}
 	
 	for(i = 0; i < count; ++i)

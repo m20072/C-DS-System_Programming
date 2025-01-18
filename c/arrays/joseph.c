@@ -9,7 +9,6 @@ size_t Josephn(size_t size);
 size_t FindNextAliveIndex(size_t* arr, size_t size, size_t index) /* receives the array starting from the point we're at on this moment */
 {
     assert(NULL != arr);
-
     do
     {
 		index = (index + 1)%size; /* next soldier */
@@ -23,23 +22,15 @@ size_t Josephnlogn(size_t size) /* n, n/2, n/4, n/8, n/16  ~=  n*log(n)*/
 {
     int kill = 1;
     size_t current_index = 0;
-    size_t next_index = 0;
+    size_t next_index = 1;
 	size_t* arr = (size_t*)calloc(sizeof(size_t), size); /* calloc because 0 = alive */
 	if(NULL == arr)
 	{
 		exit(1);
 	}
 
-    while(1)
+    while(next_index != current_index)
     {
-        /* start searching from previous killed soldier onwards (nextIndex, not currentIndex) */
-        next_index = findNextAliveIndex(arr, size, next_index);
-
-        if(next_index == current_index)
-        {
-            break;
-        }
-
         if(1 == kill)
         {
 			arr[next_index] = 1;
@@ -50,6 +41,7 @@ size_t Josephnlogn(size_t size) /* n, n/2, n/4, n/8, n/16  ~=  n*log(n)*/
             current_index = next_index;
             kill = 1;
         }
+        next_index = FindNextAliveIndex(arr, size, next_index); /* start searching from previous killed soldier onwards (nextIndex, not currentIndex) */
     }
     free(arr);
     return current_index;
@@ -83,7 +75,7 @@ size_t Josephn(size_t size)
     }
     
     free(arr);
-    return next_soldier;
+    return current_soldier;
 }
 
 

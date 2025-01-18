@@ -1,13 +1,10 @@
-# ignore swap files
-**/*.swp
-**/*.swo
+# Ignore everything
+*
 
-# ignore output files
-**/*.o
+# Whitelist
+!*.c
+!*.h
+!*.sh
 
-# ignore corefiles
-**/core*
-**/vgcore*
-
-# ignore dummy files
-**/dummy.md
+# .gitignore is not ignored
+!.gitignore

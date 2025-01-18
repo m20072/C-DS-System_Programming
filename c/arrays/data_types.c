@@ -1,5 +1,5 @@
 #include <stdio.h>
-
+/*test*/
 int main()
 {
 	int arr1[5];

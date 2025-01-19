@@ -1,42 +1,8 @@
-#include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
-
-char* strdup(const char*);
-
-typedef enum data_type
-{
-    INT,
-    FLOAT,
-    STRING
-} data_type_t;
-
-typedef struct data
-{
-    data_type_t type;
-    void* data;
-} data_t;
-
-/* Print Functions */
-void Print(data_t* arr, size_t size);
-void PrintInt(void* i_num);
-void PrintFloat(void* f_num);
-void PrintString(void* str);
-
-/* Add Functions */
-void Add(data_t* arr, size_t size, int add_num);
-void AddToInt(void* i_num, int add_num);
-void AddToFloat(void* f_num, int add_num);
-char* AddToStr(void* str, int add_num);
-
-/* Clean-Up functions */
-void CleanUp(data_t* arr, size_t size);
-char* StrCleanUp(void* str);
-
-/* Helper Functions */
-size_t NumDigits(int number);
+#include "struct.h"
 
 void PrintInt(void* i_num)
 {
@@ -179,35 +145,4 @@ size_t NumDigits(int number)
         ++count;
     }
     return count;
-}
-
-int main()
-{
-    float data_float[1] = { 5.5 };
-    data_t data[3]; /* can't init due to float conversion to ptr error (also strdup) */
-
-    data[0].type = INT;
-    data[0].data = (void*)5;
-
-    data[1].type = FLOAT;
-    data[1].data = *(void**)&data_float[0]; /* float* cast to void**, dereferenced into void* */
-                                /* cant (void*)f, error for trying to convert float into ptr */
-
-    data[2].type = STRING;
-    data[2].data = strdup("HI");
-
-    Print(data, 3);
-    Add(data, 3, 10);
-    Print(data, 3);
-    CleanUp(data, 3);
-    Print(data, 3);
-    Add(data, 3, 10);
-    Print(data, 3);
-    CleanUp(data, 3);
-    Add(data, 3, 50);
-    Add(data, 3, 20);
-    Print(data, 3);
-    CleanUp(data, 3);
-    Print(data, 3);
-    return 0;
 }

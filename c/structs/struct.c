@@ -4,134 +4,107 @@
 #include <assert.h>
 #include "struct.h"
 
-void PrintInt(void* i_num)
+void PrintInt(mixed_data_t* element)
 {
-    printf("%d, ",*(int*)&i_num); /* avoid warning "cast to smaller type"  */
+	printf("%d, ", *(int*)&element->data); /* avoid warning "cast to smaller type"  */
 }
 
-void PrintFloat(void* f_num)
+void PrintFloat(mixed_data_t* element)
 {
-    printf("%f, ", *(float*)&f_num); /* avoid error for trying to cast a ptr into a float */
+    printf("%f, ", *(float*)&element->data); /* avoid error for trying to cast a ptr into a float */
 }
 
-void PrintString(void* str)
-{
-    if(NULL == str)
+void PrintString(mixed_data_t* element)
+{   
+    if(NULL == element->data)
     {
-        return;
-    }
-    printf("%s, ", (char*)str);
+    	return;
+	}
+	printf("%s, ", (char*)element->data); /* ternary if instead */
 }
 
-void AddToInt(void* i_num, int add_num)
+/* Increments the int data by add_num */
+void AddToInt(mixed_data_t* element, int add_num)
 {
-    *(int*)i_num += add_num;
+    *(int*)&element->data += add_num;
 }
 
-void AddToFloat(void* f_num, int add_num)
+/* Increments the float data by add_num */
+void AddToFloat(mixed_data_t* element, int add_num)
 {
-    *(float*)f_num += add_num;
+    *(float*)&element->data += add_num;
 }
 
 /* Appends the int value (converted to string format) to the string */
-char* AddToStr(void* str, int add_num)
+void AddToStr(mixed_data_t* element, int add_num)
 {
     size_t digit_count = NumDigits(add_num);
     size_t len = 0;
 
-    if(NULL != str)
+    if(NULL != element->data)
     {
-        len = strlen(str);
+        len = strlen(element->data);
     }
 
-    str = realloc(str, (len + digit_count + 1) * sizeof(char)); /* acts as malloc if str is NULL */
-    if(NULL == str)
+    element->data = realloc(element->data, (len + digit_count + 1) * sizeof(char)); /* acts as malloc if str is NULL */
+    if(NULL == element->data)
     {
         fprintf(stderr, "Memory allocation failed\n");
         exit(1);
     }
     
-    sprintf((char*)str + len, "%d", add_num); /* skip the string and append add_num at the end */
-    return str;
+    sprintf((char*)element->data + len, "%d", add_num); /* skip the string and append add_num at the end */
 }
 
-char* StrCleanUp(void* str)
+void IntCleanUp(mixed_data_t* element)
 {
-    free(str); /* its fine if str is NULL */
-    return NULL;
+	(void)element;/* empty function */
+}
+void FloatCleanUp(mixed_data_t* element)
+{
+	(void)element; /* empty function */
+}
+
+void StrCleanUp(mixed_data_t* element)
+{
+    free(element->data); /* its fine if str is NULL */
+    element->data = NULL;
 }
 
 /* Traverse through array and run the appropriate print function for each element according to its type */
-void Print(data_t* arr, size_t size)
+void Print(mixed_data_t* arr, size_t size)
 {
     size_t i;
     assert(NULL != arr);
 
-    for(i = 0;i<size;++i)
+    for(i = 0; i < size; ++i)
     {
-        switch (arr[i].type) 
-        {
-            case INT:
-                PrintInt(arr[i].data);
-                break;
-
-            case FLOAT:
-                PrintFloat(arr[i].data);
-                break;
-
-            case STRING:
-                PrintString(arr[i].data);
-                break;
-        }
+    	arr[i].print(&arr[i]);
     }
     printf("\n");
 }
 
 /* Traverse through array and run the apropriate add function to add the int value to each element */
-void Add(data_t* arr, size_t size, int add_num)
+void Add(mixed_data_t* arr, size_t size, int add_num)
 {
     size_t i;
     assert(NULL != arr);
 
     for(i = 0; i < size; ++i)
     {
-        switch (arr[i].type) 
-        {
-            case INT:
-                AddToInt(&arr[i].data, add_num);
-                break;
-
-            case FLOAT:
-                AddToFloat(&arr[i].data, add_num);
-                break;
-
-            case STRING:
-                arr[i].data = AddToStr(arr[i].data, add_num);
-                break;
-        }
+    	arr[i].add(&arr[i], add_num);
     }
 }
 
 /* Traverse through array and run the apropriate CleanUp function for each element (if applicable) */
-void CleanUp(data_t* arr, size_t size)
+void CleanUp(mixed_data_t* arr, size_t size)
 {
     size_t i;
     assert(NULL != arr);
 
     for(i = 0; i < size; ++i)
     {
-        switch (arr[i].type) 
-        {
-            case INT:
-                break;
-
-            case FLOAT:
-                break;
-
-            case STRING:
-                arr[i].data = StrCleanUp(arr[i].data);
-                break;
-        }
+    	arr[i].clean_up(&arr[i]);
     }
 }
 

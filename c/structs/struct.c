@@ -1,46 +1,119 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <assert.h>
 #include "struct.h"
 
-/*
-* Reviewed by Sharon
-*/
+/* Print Functions */
+static status_t PrintInt(mixed_data_t* element);
+static status_t PrintFloat(mixed_data_t* element);
+static status_t PrintString(mixed_data_t* element);
 
-void PrintInt(mixed_data_t* element)
+/* Add Functions */
+static status_t AddToInt(mixed_data_t* element, int add_num);
+static status_t AddToFloat(mixed_data_t* element, int add_num);
+static status_t AddToString(mixed_data_t* element, int add_num);
+
+/* Clean-Up functions */
+static status_t IntCleanUp(mixed_data_t* element);
+static status_t FloatCleanUp(mixed_data_t* element);
+static status_t StringCleanUp(mixed_data_t* element);
+
+/* Helper Functions */
+static size_t NumDigits(int number);
+
+
+/* Creates an INT element */
+status_t InitInt(mixed_data_t* element, int value)
 {
-	printf("%d, ", *(int*)&element->data); /* avoid warning "cast to smaller type"  */
+	if (NULL == element)
+	{
+		fprintf(stderr, "INT element creation failed due to NULL pointer\n");
+		return FAILURE;
+	}
+
+	*(int*)&element->data = value;
+	element->print = &PrintInt;
+	element->add_int = &AddToInt;
+	element->clean_up = &IntCleanUp;
+	return SUCCESS;
 }
 
-void PrintFloat(mixed_data_t* element)
+/* Creates a FLOAT element */
+status_t InitFloat(mixed_data_t* element, float value)
 {
-    printf("%f, ", *(float*)&element->data); /* avoid error for trying to cast a ptr into a float */
+	if (NULL == element)
+	{
+		fprintf(stderr, "FLOAT element creation failed due to NULL pointer\n");
+		return FAILURE;
+	}
+	*(float*)&element->data = value;
+	element->print = &PrintFloat;
+	element->add_int = &AddToFloat;
+	element->clean_up = &FloatCleanUp;
+	return SUCCESS;
 }
 
-void PrintString(mixed_data_t* element)
+/* Creates a STRING element */
+status_t InitString(mixed_data_t* element, char* value)
+{
+	if (NULL == element || NULL == value)
+	{
+		fprintf(stderr, "STRING element creation failed due to NULL pointer\n");
+		return FAILURE;
+	}
+	
+	element->data = (void*)strdup(value);
+	if(NULL == element->data)
+	{
+		fprintf(stderr, "STRING element creation failed due to strdup error\n");
+		return FAILURE;
+	}
+	
+	element->print = &PrintString;
+	element->add_int = &AddToString;
+	element->clean_up = &StringCleanUp;
+	return SUCCESS;
+}
+
+
+static status_t PrintInt(mixed_data_t* element)
+{
+	printf("%d", *(int*)&element->data);
+	return SUCCESS;
+}
+
+static status_t PrintFloat(mixed_data_t* element)
+{
+    printf("%f", *(float*)&element->data);
+    return SUCCESS;
+}
+
+static status_t PrintString(mixed_data_t* element)
 {   
     if(NULL == element->data)
     {
-    	return;
+    	return SUCCESS;
 	}
-	printf("%s, ", (char*)element->data); /* ternary if instead */
+	printf("%s", (char*)element->data);
+	return SUCCESS;
 }
 
 /* Increments the int data by add_num */
-void AddToInt(mixed_data_t* element, int add_num)
+static status_t AddToInt(mixed_data_t* element, int add_num)
 {
     *(int*)&element->data += add_num;
+    return SUCCESS;
 }
 
 /* Increments the float data by add_num */
-void AddToFloat(mixed_data_t* element, int add_num)
+static status_t AddToFloat(mixed_data_t* element, int add_num)
 {
     *(float*)&element->data += add_num;
+    return SUCCESS;
 }
 
 /* Appends the int value (converted to string format) to the string */
-void AddToStr(mixed_data_t* element, int add_num)
+static status_t AddToString(mixed_data_t* element, int add_num)
 {
     size_t digit_count = NumDigits(add_num);
     size_t len = 0;
@@ -54,62 +127,29 @@ void AddToStr(mixed_data_t* element, int add_num)
     if(NULL == element->data)
     {
         fprintf(stderr, "Memory allocation failed\n");
-        exit(1);
+        return FAILURE;
     }
     
     sprintf((char*)element->data + len, "%d", add_num); /* skip the string and append add_num at the end */
+    return SUCCESS;
 }
 
-void IntCleanUp(mixed_data_t* element)
+static status_t IntCleanUp(mixed_data_t* element)
 {
-	(void)element;/* empty function */
+	(void)element;
+	return SUCCESS;
 }
-void FloatCleanUp(mixed_data_t* element)
+static status_t FloatCleanUp(mixed_data_t* element)
 {
-	(void)element; /* empty function */
+	(void)element;
+	return SUCCESS;
 }
 
-void StrCleanUp(mixed_data_t* element)
+static status_t StringCleanUp(mixed_data_t* element)
 {
-    free(element->data); /* its fine if str is NULL */
+    free(element->data);
     element->data = NULL;
-}
-
-/* Traverse through array and run the appropriate print function for each element according to its type */
-void Print(mixed_data_t* arr, size_t size)
-{
-    size_t i;
-    assert(NULL != arr);
-
-    for(i = 0; i < size; ++i)
-    {
-    	arr[i].print(&arr[i]);
-    }
-    printf("\n");
-}
-
-/* Traverse through array and run the apropriate add function to add the int value to each element */
-void Add(mixed_data_t* arr, size_t size, int add_num)
-{
-    size_t i;
-    assert(NULL != arr);
-
-    for(i = 0; i < size; ++i)
-    {
-    	arr[i].add(&arr[i], add_num);
-    }
-}
-
-/* Traverse through array and run the apropriate CleanUp function for each element (if applicable) */
-void CleanUp(mixed_data_t* arr, size_t size)
-{
-    size_t i;
-    assert(NULL != arr);
-
-    for(i = 0; i < size; ++i)
-    {
-    	arr[i].clean_up(&arr[i]);
-    }
+    return SUCCESS;
 }
 
 /* counts the number of digits in a number provided as argument */

@@ -2,38 +2,29 @@
 
 char* strdup(const char*);
 
+typedef enum status_t
+{
+	SUCCESS,
+	FAILURE
+} status_t;
+
+
 typedef struct mixed_data mixed_data_t;
-typedef void (*PrintPtr)(mixed_data_t* element);
-typedef void (*AddPtr)(mixed_data_t* element, int add_num);
-typedef void (*CleanUpPtr)(mixed_data_t* element);
+typedef status_t (*print_t)(mixed_data_t* element);
+typedef status_t (*add_int_t)(mixed_data_t* element, int add_num);
+typedef status_t (*clean_up_t)(mixed_data_t* element);
 
 struct mixed_data
 {
     void* data;
-    PrintPtr print;
-	AddPtr add;
-	CleanUpPtr clean_up;
+    print_t print;
+	add_int_t add_int;
+	clean_up_t clean_up;
 };
 
-/* Print Functions */
-void Print(mixed_data_t* arr, size_t size);
-void PrintInt(mixed_data_t* element);
-void PrintFloat(mixed_data_t* element);
-void PrintString(mixed_data_t* element);
 
-/* Add Functions */
-void Add(mixed_data_t* arr, size_t size, int add_num);
-void AddToInt(mixed_data_t* element, int add_num);
-void AddToFloat(mixed_data_t* element, int add_num);
-void AddToStr(mixed_data_t* element, int add_num);
-
-/* Clean-Up functions */
-void CleanUp(mixed_data_t* arr, size_t size);
-void IntCleanUp(mixed_data_t* element);
-void FloatCleanUp(mixed_data_t* element);
-void StrCleanUp(mixed_data_t* element);
-
-/* Helper Functions */
-size_t NumDigits(int number);
-
+/* Init functions */
+status_t InitInt(mixed_data_t* element, int value);
+status_t InitFloat(mixed_data_t* element, float value);
+status_t InitString(mixed_data_t* element, char* value);
 

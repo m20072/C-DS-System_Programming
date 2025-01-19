@@ -1,42 +1,88 @@
-#include "struct.h"
-#include <stdio.h>
-#include <stdlib.h>
+/******************************************************************************
+* File: struct_test.c
+*
+* Purpose:
+*   Test suite for struct.h functions providing verification of functionality
+*	of struct.c which implements elements to hold polymorphic datatypes.
+*
+* Notes:
+*   - tests element creation, int addition, printing, and cleanup
+*   
+* Author:
+*   Shani Zuniga
+*
+******************************************************************************/
 
-int main()
+#include <stdio.h>						/* printf */
+#include <assert.h>                     /* assert macro */
+#include "struct.h"                     /* functions to test */
+
+#define SIZE 10 						/* test array size */
+
+void TestCreateArray(mixed_data_t* array)
 {
-    float data_float[1] = { 5.5 };
-    mixed_data_t elements[3]; /* can't init due to float conversion to ptr error (also strdup) */
-
-    elements[0].print = &PrintInt;
-    elements[0].add = &AddToInt;
-    elements[0].clean_up = &IntCleanUp;
-    elements[0].data = (void*)5;
-
-    elements[1].print = &PrintFloat;
-    elements[1].add = &AddToFloat;
-    elements[1].clean_up = &FloatCleanUp;
-    elements[1].data = *(void**)&data_float[0]; /* float* cast to void**, dereferenced into void* */
-                                /* cant (void*)f, error for trying to convert float into ptr */
-
-    elements[2].print = &PrintString;
-    elements[2].add = &AddToStr;
-    elements[2].clean_up = &StrCleanUp;
-    elements[2].data = strdup("HI");
-    
-    
-
-    Print(elements, 3);
-    Add(elements, 3, 10);
-    Print(elements, 3);
-    CleanUp(elements, 3);
-    Print(elements, 3);
-    Add(elements, 3, 10);
-    Print(elements, 3);
-    CleanUp(elements, 3);
-    Add(elements, 3, 50);
-    Add(elements, 3, 20);
-    Print(elements, 3);
-    CleanUp(elements, 3);
-    Print(elements, 3);
-    return 0;
+	assert(SUCCESS == InitInt(array + 0, 0));
+	assert(SUCCESS == InitInt(array + 1, 1));
+	assert(SUCCESS == InitInt(array + 2, 2));
+	assert(SUCCESS == InitInt(array + 3, -3));
+	assert(SUCCESS == InitFloat(array + 4, 4.0));
+	assert(SUCCESS == InitFloat(array + 5, 5.0));
+	assert(SUCCESS == InitFloat(array + 6, -6.0));
+	assert(SUCCESS == InitString(array + 7, "7"));
+	assert(SUCCESS == InitString(array + 8, "8"));
+	assert(SUCCESS == InitString(array + 9, "9"));
 }
+
+void TestPrintArray(mixed_data_t* array)
+{
+	size_t i = 0;
+	
+	printf("[ ");
+	for (i = 0; i < SIZE; ++i)
+	{
+		assert(0 == array[i].print(array + i));
+		printf(", ");
+	}
+	printf("]\n");
+}
+
+void TestAddIntToArray(mixed_data_t* array)
+{
+	size_t i = 0;
+	
+	for (i = 0; i < SIZE; ++i)
+	{
+		assert(0 == array[i].add_int(array + i, 10));
+	}
+	for (i = 0; i < SIZE; ++i)
+	{
+		assert(0 == array[i].add_int(array + i, -1));
+	}
+}
+
+void TestCleanArray(mixed_data_t* array)
+{
+	size_t i = 0;
+	
+	for (i = 0; i < SIZE; ++i)
+	{
+		assert(0 == array[i].clean_up(array + i));
+	}
+}
+
+int main(void)
+{
+	mixed_data_t array[SIZE];
+	
+	printf("Beginning struct.c tests...\n\n");
+	
+	TestCreateArray(array);
+	TestPrintArray(array);
+	TestAddIntToArray(array);
+	TestPrintArray(array);
+	TestCleanArray(array);
+
+	printf("\nAll tests completed successfully\n");
+	return 0;
+}
+

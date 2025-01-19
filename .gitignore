@@ -1,10 +1,12 @@
-# Ignore everything
+# ignore everything
 *
 
-# Whitelist
-!*.c
-!*.h
-!*.sh
+# allow direcotires
+!*/
 
-# .gitignore is not ignored
+
+#Whitelist
+!**/*.c
+!**/*.h
+!**/*.sh
 !.gitignore

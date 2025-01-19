@@ -4,6 +4,10 @@
 #include <assert.h>
 #include "struct.h"
 
+/*
+* Reviewed by Sharon
+*/
+
 void PrintInt(mixed_data_t* element)
 {
 	printf("%d, ", *(int*)&element->data); /* avoid warning "cast to smaller type"  */

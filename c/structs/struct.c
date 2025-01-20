@@ -78,21 +78,29 @@ status_t InitString(mixed_data_t* element, char* value)
 
 static status_t PrintInt(mixed_data_t* element)
 {
+	if(NULL == element)
+	{
+		return FAILURE;
+	}
 	printf("%d", *(int*)&element->data);
 	return SUCCESS;
 }
 
 static status_t PrintFloat(mixed_data_t* element)
 {
+	if(NULL == element)
+	{
+		return FAILURE;
+	}
     printf("%f", *(float*)&element->data);
     return SUCCESS;
 }
 
 static status_t PrintString(mixed_data_t* element)
 {   
-    if(NULL == element->data)
+    if(NULL == element || NULL == element->data)
     {
-    	return SUCCESS;
+    	return FAILURE;
 	}
 	printf("%s", (char*)element->data);
 	return SUCCESS;
@@ -101,6 +109,10 @@ static status_t PrintString(mixed_data_t* element)
 /* Increments the int data by add_num */
 static status_t AddToInt(mixed_data_t* element, int add_num)
 {
+	if(NULL == element)
+	{
+		return FAILURE;
+	}
     *(int*)&element->data += add_num;
     return SUCCESS;
 }
@@ -108,6 +120,10 @@ static status_t AddToInt(mixed_data_t* element, int add_num)
 /* Increments the float data by add_num */
 static status_t AddToFloat(mixed_data_t* element, int add_num)
 {
+	if(NULL == element)
+	{
+		return FAILURE;
+	}
     *(float*)&element->data += add_num;
     return SUCCESS;
 }
@@ -118,6 +134,11 @@ static status_t AddToString(mixed_data_t* element, int add_num)
     size_t digit_count = NumDigits(add_num);
     size_t len = 0;
 
+	if(NULL == element)
+	{
+		return FAILURE;
+	}
+	
     if(NULL != element->data)
     {
         len = strlen(element->data);
@@ -147,6 +168,10 @@ static status_t FloatCleanUp(mixed_data_t* element)
 
 static status_t StringCleanUp(mixed_data_t* element)
 {
+	if(NULL == element || NULL == element->data)
+	{
+		return FAILURE;
+	}
     free(element->data);
     element->data = NULL;
     return SUCCESS;

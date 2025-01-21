@@ -1,3 +1,5 @@
+/* Reviewed by Ori */
+
 #include "wbo.h"
 
 #define WORD_SIZE_BYTES sizeof(void*)

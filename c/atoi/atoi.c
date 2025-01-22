@@ -6,7 +6,7 @@
 static char	IntToAscii(int num);
 static int AsciiToInt(char ascii);
 static size_t BaseNumDigits(int num, int base);
-static void FillCharIndexes(int dst[][3], size_t col_index, char* src, size_t src_size);
+static void FillCharIndexes(int dst[][3], size_t col_index, const char* src, size_t src_size);
 
 static char	IntToAscii(int num)
 {
@@ -36,6 +36,13 @@ char* IntToStringBase10(char* buffer, int num)
 	size_t num_digits = BaseNumDigits(num, 10);
 	int negative = 0;
 	assert(NULL != buffer);
+	
+	if (0 == num) 
+	{
+		*buffer = '0';
+		*(buffer+1) = '\0';
+		return buffer;
+    }
 	
 	if(num < 0)
 	{
@@ -131,7 +138,7 @@ char* Itoa_base(char* buffer, int num, size_t base)
 }
 
 /* Only print characters that are in both arr1 arr2, but not in arr3 */
-void PrintLetters(char* arr1, char* arr2, char* arr3, size_t size1, size_t size2, size_t size3)
+void PrintLetters(const char* arr1, const char* arr2, const char* arr3, size_t size1, size_t size2, size_t size3)
 {
 	int i = 0;
 	int count_arr[256][3] = { 0 };
@@ -153,7 +160,7 @@ void PrintLetters(char* arr1, char* arr2, char* arr3, size_t size1, size_t size2
 }
 
 /* Iterates through array of chars and fills with 1 on indexes of those chars in the array dst */
-static void FillCharIndexes(int dst[][3], size_t col_index, char* src, size_t src_size)
+static void FillCharIndexes(int dst[][3], size_t col_index, const char* src, size_t src_size)
 {
 	size_t i = 0;
 	

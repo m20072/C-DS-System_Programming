@@ -1,6 +1,6 @@
-#include <stddef.h>
-#include <assert.h>
-#include <stdio.h>
+#include <stddef.h> /* size_t */
+#include <assert.h> /* assert */
+#include <stdio.h> /* printf */
 #include "atoi.h"
 
 static char	IntToAscii(int num);
@@ -63,6 +63,9 @@ int StringToIntBase10(const char* str)
 {
 	int res = 0;
 	int sign = 1;
+	
+	assert(NULL != str);
+	
 	if(*str == '-')
 	{
 		++str;
@@ -83,6 +86,8 @@ int Atoi_base(const char* str, size_t base)
 	int res = 0;
 	int sign = 1;
 	
+	assert(NULL != str);
+	
 	if('-' == *str)
 	{
 		++str;
@@ -102,6 +107,7 @@ char* Itoa_base(char* buffer, int num, size_t base)
 {
 	size_t num_digits = BaseNumDigits(num, base);
 	int negative = 0;
+	
 	assert(NULL != buffer);
 	
 	if(num < 0)
@@ -130,6 +136,8 @@ void PrintLetters(char* arr1, char* arr2, char* arr3, size_t size1, size_t size2
 	int i = 0;
 	int count_arr[256][3] = { 0 };
 	
+	assert(NULL != arr1 && NULL != arr2 && NULL != arr3);
+	
 	FillCharIndexes(count_arr, 0, arr1, size1);
 	FillCharIndexes(count_arr, 1, arr2, size2);
 	FillCharIndexes(count_arr, 2, arr3, size3);
@@ -148,11 +156,15 @@ void PrintLetters(char* arr1, char* arr2, char* arr3, size_t size1, size_t size2
 static void FillCharIndexes(int dst[][3], size_t col_index, char* src, size_t src_size)
 {
 	size_t i = 0;
+	
+	assert(NULL != dst && NULL != src);
+	
 	for(i = 0; i < src_size ; ++i)
 	{
 		dst[src[i]][col_index] = 1;
 	}
 }
+
 
 /* n is an int with value 1, meaning that the LEAST significant byte has 00000001, currently unkown if that LSB is at the lowest address of the word, or the highest address of it.
  * if we look at the address of n (&n) as though it was a char, 

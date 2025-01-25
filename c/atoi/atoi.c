@@ -1,3 +1,4 @@
+#include <ctype.h>
 #include <stddef.h> /* size_t */
 #include <assert.h> /* assert */
 #include <stdio.h> /* printf */
@@ -15,7 +16,7 @@ static char	IntToAscii(int num)
 
 static int AsciiToInt(char ascii)
 {	
-	return (ascii <= '9') ? ascii - '0': ascii - '7';
+	return (ascii <= '9') ? ascii - '0': ascii - 'W';
 }
 
 /* Given a decimal number, returns the number of digits for a given base */
@@ -72,6 +73,11 @@ int StringToIntBase10(const char* str)
 	int sign = 1;
 	
 	assert(NULL != str);
+
+	while(0 != isspace(*str))
+	{
+		++str;
+	}
 	
 	if(*str == '-')
 	{
@@ -81,7 +87,7 @@ int StringToIntBase10(const char* str)
 	
 	while('\0' != *str)
 	{
-		res = res * 10 + AsciiToInt(*str);
+		res = res * 10 + AsciiToInt((*str | 32));
 		++str;
 	}
 	return sign * res;
@@ -94,6 +100,11 @@ int Atoi_base(const char* str, size_t base)
 	int sign = 1;
 	
 	assert(NULL != str);
+
+	while(0 != isspace(*str))
+	{
+		++str;
+	}
 	
 	if('-' == *str)
 	{
@@ -103,7 +114,7 @@ int Atoi_base(const char* str, size_t base)
 	
 	while('\0' != *str)
 	{
-		res = res * base + AsciiToInt(*str);
+		res = res * base + AsciiToInt(*str | 32);
 		++str;
 	}
 	return sign * res;

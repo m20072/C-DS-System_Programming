@@ -72,7 +72,7 @@ int Strcmp(const char* str1, const char* str2)
 {
 	assert(NULL != str1 && NULL != str2);
 
-	while('\0' != *str1 && *str1 == *str2)
+	while(('\0' != *str1) && (*str1 == *str2))
 	{
 		++str1;
 		++str2;
@@ -183,4 +183,3 @@ void IntSwap3(int* num1, int* num2)
 	*num2 = *num1 - *num2;
 	*num1 = *num1 - *num2;
 }
-

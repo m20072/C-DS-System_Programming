@@ -26,7 +26,6 @@ unsigned char MirrorByte(unsigned char byte)
 	byte = (byte << 4) | (byte >> 4);
 	byte = (((byte & 0x33) << 2) | ((byte & 0xcc) >> 2));
 	return (((byte & 0x55) << 1) | ((byte & 0xaa) >> 1));
-	
 }
 
 int FlipBit(int val, unsigned int n)
@@ -44,7 +43,7 @@ char CountSetBits(unsigned char byte)
 char RotateLeft(unsigned char byte, unsigned int nbits)
 {
 	nbits &= 0x7;
-	return ((byte << (nbits & 0x7)) | (byte >> ((8 - nbits) & 0x7)));
+	return ((byte << nbits) | (byte >> (8 - nbits)));
 }
 
 void SwapIntPtr(int** ptr1, int** ptr2)

@@ -1,3 +1,4 @@
+/* Reviewed by Liel */
 #include <ctype.h>
 #include <stddef.h> /* size_t */
 #include <assert.h> /* assert */

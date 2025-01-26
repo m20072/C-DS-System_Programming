@@ -1,12 +1,13 @@
+/* Reviewed by Sharona */
+
 #include "serialize_structs.h"
 #include <stdio.h>
-
 
 int main()
 {
 	FILE* fptr = NULL;
 	student_t student1 = { "matan", "chen", {{100,98}, {97,96}, 95} };
-	student_t student2;
+	student_t student2 = { 0 };
 
 	fptr = fopen("test.bin", "wb+");
 	if(NULL == fptr)

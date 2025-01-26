@@ -1,3 +1,5 @@
+/* Reviewed by Sharona */
+
 #include "serialize_structs.h"
 #include <assert.h>
 #include <stdio.h>

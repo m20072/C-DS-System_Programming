@@ -20,10 +20,10 @@
 #define BIT_ARR_BITS (BIT_ARR_BYTES * CHAR_BIT)
 
 /* look-up table for counting set bits in a byte */
-static unsigned char BitsSetTable256[256] = {0};
+static unsigned char BitsSetTable[256] = {0};
 
 /* look-up table for mirroring a byte */
-static unsigned char ByteMirrorTable256[256] = {0};
+static unsigned char ByteMirrorTable[256] = {0};
 
 static void InitMirrorLUT()
 {
@@ -35,8 +35,7 @@ static void InitMirrorLUT()
 	    byte = i;
 		byte = ((byte & 0xF0) >> 4 | (byte & 0x0F) << 4);
 		byte = ((byte & 0xCC) >> 2 | (byte & 0x33) << 2);
-		byte = ((byte & 0xAA) >> 1 | (byte & 0x55) << 1);
- 		ByteMirrorTable256[i] = byte;
+		ByteMirrorTable[i] = ((byte & 0xAA) >> 1 | (byte & 0x55) << 1);
 	}
 } 
 
@@ -46,7 +45,7 @@ static void InitCountOnLUT()
 	
 	for (i = 0; i < 256; ++i)
 	{
-	    BitsSetTable256[i] = (i & 1) + BitsSetTable256[i / 2]; /* how to explain */
+	    BitsSetTable[i] = (i & 1) + BitsSetTable[i / 2]; /* how to explain */
 	}
 } 
 
@@ -141,7 +140,7 @@ bit_arr_t BitArrMirrorLUT(bit_arr_t bit_arr)
 
 	for(i = 0; i < BIT_ARR_BYTES; ++i)
 	{
-		byte_mirror = ByteMirrorTable256[bit_arr & 0xFF];
+		byte_mirror = ByteMirrorTable[bit_arr & 0xFF];
 		byte_mirror <<= (((CHAR_BIT - 1) - i) * CHAR_BIT);
 		result |= byte_mirror;
 		bit_arr >>= CHAR_BIT;
@@ -178,7 +177,7 @@ size_t BitArrCountOnLUT(bit_arr_t bit_arr)
 	
 	while(0 != bit_arr)
 	{
-		count += BitsSetTable256[bit_arr & 0xff];
+		count += BitsSetTable[bit_arr & 0xff];
 		bit_arr >>= CHAR_BIT;
 	}
 	return count;

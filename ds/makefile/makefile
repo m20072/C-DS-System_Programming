@@ -16,12 +16,19 @@ release: $(TARGET)
 $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) -o $@
 
-
 main.o: main.c foo.h
 	$(CC) $(CFLAGS) -c main.c
 	
 foo.o : foo.c foo.h
 	$(CC) $(CFLAGS) -c foo.c
+
+#below are what the implicit rules would do
+#notice .h dependencies are missing, implicits are not reliable
+#main.o: main.c		
+#	$(CC) -c $(CPPFLAGS) $(CFLAGS)
+	
+#foo.o : foo.c
+#	$(CC) -c $(CPPFLAGS) $(CFLAGS)
 
 clean :
 	rm -f $(OBJS) $(TARGET)

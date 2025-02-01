@@ -1,4 +1,16 @@
-/* Reviewed by Daniel */
+/******************************************************************************
+* File: stack.c
+*
+* Purpose:
+*   implements stack.h
+*   
+* Author:
+*   Matan Chen
+*
+* Review History:
+*   - Daniel
+*
+******************************************************************************/
 
 #include <stdlib.h>
 #include <string.h>

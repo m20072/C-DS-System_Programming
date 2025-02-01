@@ -1,9 +1,23 @@
-/* Reviewed by Daniel */
+/******************************************************************************
+* File: stack.h
+*
+* Purpose:
+*   Provides an interface for stack implementation.
+*
+* Author:
+*   Matan Chen
+*
+* Review History:
+*   - Daniel
+*
+******************************************************************************/
+
 
 #ifndef __STACK_H__
 #define __STACK_H__
 
-#include <stddef.h>
+#include <stddef.h> /* size_t */
+
 typedef struct stack stack_t;
 
 /* Returns a pointer to a dynamically allocated stack of maximal size capacity, each element size is element_size */

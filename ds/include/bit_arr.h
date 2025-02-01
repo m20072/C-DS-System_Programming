@@ -2,7 +2,7 @@
 * File: bit_arr.h
 *
 * Purpose:
-*   Provides a bit array implementation
+*   Provides an interface for bit array implementation.
 *
 * Author:
 *   Matan Chen

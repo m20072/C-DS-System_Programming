@@ -1,10 +1,5 @@
-#include <stdio.h>
-#include <assert.h>
-#include <string.h>
-#include "../include/stack.h"
-
 /******************************************************************************
-* File: test_stack.c 
+* File: stack_test.c 
 *
 * Purpose:
 *   Comprehensive test suite for generic stack implementation
@@ -22,6 +17,11 @@
 *   -  Reviewed by Daniel
 *
 ******************************************************************************/
+
+#include <stdio.h> /* printf */
+#include <assert.h> /* assert */
+#include <string.h> /* strcmp */
+#include "../include/stack.h"
 
 typedef struct
 {

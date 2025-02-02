@@ -40,6 +40,7 @@ vector_t* VectorCreate(size_t element_size, size_t capacity)
 	vector->vector_head = (void*)malloc(element_size * capacity);
 	if(NULL == vector->vector_head)
 	{
+		free(vector);
 		return NULL;
 	}
 	

@@ -21,7 +21,7 @@
 
 struct vector
 {
-    void* vector_head;
+	void* vector_head;
 	size_t element_size;
 	size_t vector_size;
 	size_t capacity;

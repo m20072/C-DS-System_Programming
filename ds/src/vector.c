@@ -73,6 +73,7 @@ int VectorPushBack(vector_t* vector, const void* data)
     void* tmp_vector_head = NULL;
     assert(NULL != vector);
     assert(NULL != vector->vector_head);
+    assert(NULL != data);
 
     if(vector->vector_size == vector->capacity)
     {

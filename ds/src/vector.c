@@ -72,7 +72,6 @@ int VectorPushBack(vector_t* vector, const void* data)
 {
     void* tmp_vector_head = NULL;
     assert(NULL != vector);
-    assert(NULL != vector->vector_head);
     assert(NULL != data);
 
     if(vector->vector_size == vector->capacity)
@@ -135,7 +134,7 @@ int VectorReserve(vector_t* vector, size_t new_capacity)
 
     if(new_capacity <= vector->capacity)
     {
-        return 1;
+        return 0;
     }
 
     tmp_vector_head = (void*)realloc(vector->vector_head, new_capacity * vector->element_size);

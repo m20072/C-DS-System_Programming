@@ -29,7 +29,11 @@ struct vector
 
 vector_t* VectorCreate(size_t element_size, size_t capacity)
 {
-	vector_t* vector = (vector_t*)malloc(sizeof(vector_t));
+	vector_t* vector = NULL;
+
+    assert(0 < capacity && 0 < element_size);
+    vector = (vector_t*)malloc(sizeof(vector_t));
+
 	if(NULL == vector)
 	{
 		return NULL;

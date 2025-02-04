@@ -181,6 +181,45 @@ static void TestListForEach(void)
 	printf(FORMAT "\t\tPASSED\n" UNFORMAT);
 }
 
+static void TestListAppend(void)
+{
+    slist_t* list1 = NULL;
+    slist_t* list2 = NULL;
+    slist_itr_t itr = NULL;
+    int values1[] = {1, 2, 3};
+    int values2[] = {4, 5, 6};
+	int expected[] = {1, 2, 3, 4, 5, 6};
+    size_t i = 0;
+
+    printf("Testing List Append...");
+    list1 = ListCreate();
+    list2 = ListCreate();
+    assert(NULL != list1 && NULL != list2);
+
+    for (i = 0; i < 3; ++i)
+    {
+        itr = ListItrEnd(list1);
+        itr = ListInsertBefore(itr, &values1[i]);	
+
+        itr = ListItrEnd(list2);
+        itr = ListInsertBefore(itr, &values2[i]);
+    }
+
+    list1 = ListAppend(list1, list2);
+    assert(6 == ListCount(list1));
+	assert(1 == ListIsEmpty(list2));
+    
+    itr = ListItrBegin(list1);
+    for (i = 0; i < 6; ++i)
+    {
+        assert(expected[i] == *(int*)ListGetData(itr));
+        itr = ListItrNext(itr);
+    }
+
+    ListDestroy(list1);
+    printf(FORMAT "\t\tPASSED\n" UNFORMAT);
+}
+
 int main(void)
 {	
 	TestListCreateDestroy();
@@ -189,6 +228,7 @@ int main(void)
 	TestListDataAccess();
 	TestListFind();
 	TestListForEach();
+	TestListAppend();
 
 	printf(FORMAT "\nAll tests completed successfully\n" UNFORMAT);
 	return 0;

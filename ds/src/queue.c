@@ -1,0 +1,90 @@
+/******************************************************************************
+* File: queue.c
+*
+* Purpose:
+*   implements queue.h
+*   
+* Author:
+*   Matan Chen
+*
+* Review History:
+*   - 
+*
+******************************************************************************/
+
+#include <stdlib.h>
+#include <assert.h>
+#include "../include/queue.h"
+#include "../include/singly_ll.h"
+
+struct Queue
+{
+    slist_t* list;
+    
+};
+
+
+queue_t* QueueCreate()
+{
+	queue_t* queue = (queue_t*)malloc(sizeof(queue_t));
+	if(NULL == queue)
+	{
+		return NULL;
+	}
+	
+	queue->list = ListCreate();
+	if(NULL == queue->list)
+	{
+		free(queue);
+		return NULL;
+	}
+	return queue;
+}
+
+void QueueDestroy(queue_t* queue)
+{
+	assert(NULL != queue);
+	ListDestroy(queue->list);
+	free(queue);
+}
+
+
+int QueueEnqueue(queue_t* queue, void* data)
+{
+	assert(NULL != queue);
+	assert(NULL != data);
+	return (NULL == ListInsertBefore(ListItrEnd(queue->list), data)) ? 1 : 0;
+}
+
+void QueueDequeue(queue_t* queue)
+{
+	assert(NULL != queue);
+	ListRemove(ListItrBegin(queue->list));
+}
+
+void* QueuePeek(const queue_t* queue)
+{
+	assert(NULL != queue);
+	return ListGetData(ListItrBegin(queue->list));
+}
+
+size_t QueueSize(const queue_t* queue)
+{
+	assert(NULL != queue);
+	return ListCount(queue->list);	
+}
+
+int QueueIsEmpty(const queue_t* queue)
+{
+	assert(NULL != queue);
+	return ListIsEmpty(queue->list);
+}
+
+queue_t* QueueAppend(queue_t* queue_dst, queue_t* queue_src)
+{
+	ListAppend(queue_dst->list, queue_src->list);
+	return queue_dst;
+}
+
+
+

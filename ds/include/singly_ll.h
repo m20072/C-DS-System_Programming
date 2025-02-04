@@ -17,8 +17,8 @@
 
 #include <stddef.h>		/* for size_t */
 
-typedef struct slist_t slist_t;
-typedef struct node_t node_t;
+typedef struct slist slist_t;
+typedef struct node node_t;
 typedef node_t* slist_itr_t;
 
 typedef int (*match_func_t) (void*, void*);
@@ -69,6 +69,9 @@ slist_itr_t ListFind(slist_itr_t from, slist_itr_t to, match_func_t is_match, co
 /* Applies an action function to each element in the given range
  * Returns 0 if successful, 1 if the action function failed */
 int ListForEach(slist_itr_t from, slist_itr_t to, action_func_t action_func, const void* param);
+
+/* Receives a destination and a source, appends the src to the destination, leaving the src an empty list */
+slist_t* ListAppend(slist_t* list_dest, slist_t* list_src);
 
 
 #endif /* __SINGLY_LL_H__ */

@@ -16,7 +16,6 @@
 
 #define FORMAT		"\x1b[1;32m"
 #define UNFORMAT	"\x1b[1;0m"
-
 static void TestQueueCreateDestroy(void)
 {
 	queue_t* queue = NULL;
@@ -34,7 +33,7 @@ static void TestQueueEnqueueDequeue()
 	queue_t* queue = NULL;
 	int val = 42;
 
-	printf("Testing Queue Enqueue/Dequque...");
+	printf("Testing Queue Enqueue/Dequeue...");
 	queue = QueueCreate();
 	assert(NULL != queue);
 	assert(1 == QueueIsEmpty(queue));
@@ -74,6 +73,7 @@ static void TestQueueAppend()
 	QueueAppend(queue1, queue2);
 	assert(6 == QueueSize(queue1));
 	assert(0 == QueueSize(queue2));
+	
 	for (i = 0; i < 6; ++i)
 	{
 		assert(expected[i] == *(int*)QueuePeek(queue1));
@@ -94,6 +94,7 @@ int main(void)
 	printf(FORMAT "\nAll tests completed successfully\n" UNFORMAT);
 	return 0;
 }
+
 
 
 

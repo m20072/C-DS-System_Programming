@@ -12,8 +12,8 @@
 *
 ******************************************************************************/
 
-#include <stdlib.h>
-#include <assert.h>
+#include <stdlib.h> /* dynamic allocations */
+#include <assert.h> /* assert */
 #include "../include/queue.h"
 #include "../include/singly_ll.h"
 

@@ -41,10 +41,11 @@ vector_t* VectorCreate(size_t element_size, size_t capacity)
 	
     capacity = MAX(capacity, MIN_CAPACITY);
 
-	vector->vector_head = (void*)malloc(element_size * capacity);
+	vector->vector_head = (void*)calloc(element_size, capacity);
 	if(NULL == vector->vector_head)
 	{
 		free(vector);
+		vector = NULL;
 		return NULL;
 	}
 	
@@ -57,8 +58,15 @@ vector_t* VectorCreate(size_t element_size, size_t capacity)
 void VectorDestroy(vector_t* vector)
 {
     assert(NULL != vector);
+    
+    memset(vector->vector_head, 0, vector->capacity * vector->element_size);
+	memset(vector, 0, sizeof(vector_t));
+	
     free(vector->vector_head);
+    vector->vector_head = NULL;
+    
     free(vector);
+    vector = NULL;
 }
 
 void* VectorAccessElement(const vector_t* vector, size_t index)

@@ -8,7 +8,7 @@
 *   Matan Chen
 *
 * Review History:
-*   - 
+*   - Albert
 *
 ******************************************************************************/
 #include <stdlib.h> /* Dynamic allocations */
@@ -68,6 +68,7 @@ void ListDestroy(slist_t* list)
 		curr = curr->next;
 	}
 	free(list);
+	list = NULL;
 }
 
 slist_itr_t ListItrBegin(const slist_t* list)
@@ -78,7 +79,7 @@ slist_itr_t ListItrBegin(const slist_t* list)
 
 slist_itr_t ListItrNext(slist_itr_t itr)
 {
-	return NodeToItr(itr->next);
+	return NodeToItr(ItrToNode(itr)->next);
 }
 
 slist_itr_t ListItrEnd(slist_t* list)
@@ -93,14 +94,14 @@ int ListItrIsEqual(slist_itr_t itr1, slist_itr_t itr2)
 }
 
 void* ListGetData(slist_itr_t itr)
-{	
+{
 	node_t* node = ItrToNode(itr);
 	
-	if(NULL == node->next) /* convert to node and then use on the node->next */
+	if(NULL == node->next) /* dont allow getting data of the tail */
 	{
 		return NULL;
 	}
-	return node->data; /* possible to get dummy tail data */
+	return node->data;
 }
 
 void ListSetData(slist_itr_t itr, const void* data)
@@ -141,20 +142,16 @@ slist_itr_t ListRemove(slist_itr_t itr)
 	node_t* curr_node = ItrToNode(itr);
 	node_t* removed_node = NULL;
 
-	if(NULL == curr_node->next) /* attempt to remove dummy tail node */
-	{
-		return NULL;
-	}
-
 	removed_node = curr_node->next;
 	curr_node->data = removed_node->data;
 	curr_node->next = removed_node->next;
 
 	if(NULL == curr_node->next) /* if replaced the removed node with dummy tail node, update list tail field */
 	{
-		((slist_t*)itr->data)->tail = itr;
+		((slist_t*)curr_node->data)->tail = itr;
 	}
 	free(removed_node);
+	removed_node = NULL;
 	return itr;
 }
 
@@ -169,6 +166,7 @@ size_t ListCount(const slist_t* list)
 
 int ListIsEmpty(slist_t* list)
 {
+	assert(NULL != list);
 	return (list->head == list->tail);
 }
 
@@ -198,7 +196,7 @@ int ListForEach(slist_itr_t from, slist_itr_t to, action_func_t action_func, con
 	while(0 == status && !ListItrIsEqual(from, to))
 	{
 		status = action_func(node_from->data, (void*)param);
-		from = from->next;
+		from = NodeToItr(node_from->next);
 		node_from = node_from->next;
 	}
 	return status;

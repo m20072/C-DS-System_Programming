@@ -8,7 +8,7 @@
 *   Matan Chen
 *
 * Review History:
-*   - 
+*   - Yonatan
 *
 ******************************************************************************/
 
@@ -20,9 +20,7 @@
 struct Queue
 {
     slist_t* list;
-    
 };
-
 
 queue_t* QueueCreate()
 {
@@ -36,6 +34,7 @@ queue_t* QueueCreate()
 	if(NULL == queue->list)
 	{
 		free(queue);
+		queue = NULL;
 		return NULL;
 	}
 	return queue;
@@ -45,7 +44,9 @@ void QueueDestroy(queue_t* queue)
 {
 	assert(NULL != queue);
 	ListDestroy(queue->list);
+	queue->list = NULL;
 	free(queue);
+	queue = NULL;
 }
 
 
@@ -53,7 +54,7 @@ int QueueEnqueue(queue_t* queue, void* data)
 {
 	assert(NULL != queue);
 	assert(NULL != data);
-	return (NULL == ListInsertBefore(ListItrEnd(queue->list), data)) ? 1 : 0;
+	return (NULL == ListInsertBefore(ListItrEnd(queue->list), data));
 }
 
 void QueueDequeue(queue_t* queue)
@@ -82,6 +83,8 @@ int QueueIsEmpty(const queue_t* queue)
 
 queue_t* QueueAppend(queue_t* queue_dst, queue_t* queue_src)
 {
+	assert(NULL != queue_dst);
+	assert(NULL != queue_src);
 	ListAppend(queue_dst->list, queue_src->list);
 	return queue_dst;
 }

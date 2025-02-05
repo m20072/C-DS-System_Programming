@@ -42,12 +42,12 @@ slist_itr_t ListItrEnd(slist_t* list);
 /* Receives two iterators, returns 1 if they are equal, 0 otherwise. O(1) */
 int ListItrIsEqual(slist_itr_t itr1, slist_itr_t itr2);
 
-/* Receives an iterator, returns a pointer to the data stored in the node (by reference). O(1) */
+/* Receives an iterator, returns a pointer to the data stored in the node (by reference). O(1)
+ * Attempt to get tail data will return NULL */
 void* ListGetData(slist_itr_t itr);
 
 /* Receives an iterator and a data ptr, sets the node's data to the provided value (by reference). O(1) 
- * If attempt to set tail data (ListItrEnd data) undefined behaviour. */
-
+ * Attempt to set tail data (ListItrEnd data) will not occur. */
 void ListSetData(slist_itr_t itr, const void* data);
 
 /* Receives an iterator and a data ptr, inserts a new node before the iterator position

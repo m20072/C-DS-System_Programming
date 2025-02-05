@@ -208,7 +208,7 @@ slist_t* ListAppend(slist_t* list_dest, slist_t* list_src)
 	list_dest->tail->data = list_src->head->data;
 	list_dest->tail->next = list_src->head->next;
 	
-	/* adjust dest tail to point to the src tail instead of what was previously dummy tail the dummy tail (and now is the first element of src) */
+	/* adjust dest tail to point to the src tail instead of what was previously dummy tail (and now is the first element of src) */
 	list_dest->tail = list_src->tail;
 	
 	/* in src, make the node after the head be its new dummy tail */

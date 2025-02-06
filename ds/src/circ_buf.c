@@ -77,23 +77,24 @@ ssize_t BufRead(circ_buf_t* buf, char* dst, size_t n_bytes)
 	size_t bytes_to_wrap = 0;
 	size_t bytes_to_read = 0;
 	size_t first_chunk = 0;
+	size_t second_chunk = 0;
 	
 	if (NULL == buf || NULL == dst)
 	{
 		return (-1);
 	}
 
-
 	bytes_to_wrap = buf->capacity - HEAD_INDEX(buf);
 	bytes_to_read = MIN(buf->size, n_bytes);
 	first_chunk = MIN(bytes_to_read, bytes_to_wrap);
 
 	memcpy(dst, HEAD(buf), first_chunk);
-	HEAD_INDEX(buf) += first_chunk % buf->capacity;
+	HEAD_INDEX(buf) += (first_chunk % buf->capacity);
     if (first_chunk < bytes_to_read) 
     {
-        memcpy(dst + first_chunk, buf->arr, (bytes_to_read - first_chunk));
-        HEAD_INDEX(buf) += (bytes_to_read - first_chunk) % buf->capacity;
+    	second_chunk = (bytes_to_read - first_chunk);
+        memcpy(dst + first_chunk, buf->arr, second_chunk);
+        HEAD_INDEX(buf) += (second_chunk % buf->capacity);
     }
 
 	buf->size -= bytes_to_read;
@@ -105,6 +106,7 @@ ssize_t BufWrite(circ_buf_t* buf, const char* src, size_t n_bytes)
 	size_t bytes_to_wrap = 0;
 	size_t bytes_to_write = 0;
 	size_t first_chunk = 0;
+	size_t second_chunk = 0;
 	
 	if (NULL == buf || NULL == src)
 	{
@@ -121,8 +123,9 @@ ssize_t BufWrite(circ_buf_t* buf, const char* src, size_t n_bytes)
 
 	if(first_chunk < bytes_to_write)
 	{
-		memcpy(TAIL(buf), src + first_chunk, bytes_to_write - first_chunk);
-		buf->size += bytes_to_write - first_chunk;
+		second_chunk = bytes_to_write - first_chunk;
+		memcpy(TAIL(buf), src + first_chunk, second_chunk);
+		buf->size += second_chunk;
 	}
 	return bytes_to_write;
 }

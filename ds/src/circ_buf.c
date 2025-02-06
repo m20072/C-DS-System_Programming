@@ -119,7 +119,7 @@ ssize_t BufWrite(circ_buf_t* buf, const char* src, size_t n_bytes)
 	first_chunk = MIN(bytes_to_write, bytes_to_wrap);
 	
 	memcpy(TAIL(buf), src, first_chunk);
-	buf->size += first_chunk; /* needed incase the if below is met */
+	buf->size += first_chunk; /* needed before the if, incase the condition is met */
 
 	if(first_chunk < bytes_to_write)
 	{

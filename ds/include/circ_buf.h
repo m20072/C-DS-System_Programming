@@ -2,8 +2,8 @@
 * File: circ_buf.h
 *
 * Purpose:
-*   Provides an interface for circular buffer implementation.
-*
+*   Provides an interface for a blocking circular buffer implementation.
+*	a FIFO-based data structure that uses a fixed-size buffer, for buffering of data streams.
 * Author:
 *   Matan Chen
 *

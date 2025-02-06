@@ -18,7 +18,6 @@
 #include "../include/circ_buf.h"
 
 #define OFFSETOF(type, element) ((size_t)&(((type*)0)->element))
-#define HEAD_INDEX(buf) (buf->head_idx)
 #define TAIL_INDEX(buf) ((buf->head_idx + buf->size) % buf->capacity)
 #define HEAD(buf) (buf->arr + buf->head_idx)
 #define TAIL(buf) (buf->arr + TAIL_INDEX(buf))
@@ -81,15 +80,15 @@ ssize_t BufRead(circ_buf_t* buf, char* dst, size_t n_bytes)
 	}
 
 	n_bytes = MIN(buf->size, n_bytes);
-	first_chunk = MIN(n_bytes, BYTES_UNTIL_WRAP(buf, HEAD_INDEX(buf)));
-	
+	first_chunk = MIN(n_bytes, BYTES_UNTIL_WRAP(buf, buf->head_idx));
+
 	memcpy(dst, HEAD(buf), first_chunk);
     if (first_chunk < n_bytes) 
     {
     	second_chunk = (n_bytes - first_chunk);
         memcpy(dst + first_chunk, buf->arr, second_chunk);
     }
-	HEAD_INDEX(buf) += (n_bytes % buf->capacity);
+	buf->head_idx += (n_bytes % buf->capacity);
 	buf->size -= n_bytes;
 	return n_bytes;
 }

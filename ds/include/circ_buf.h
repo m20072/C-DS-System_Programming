@@ -34,10 +34,10 @@ size_t BufSize(const circ_buf_t* buf);
 /* Check if buffer is empty, returns 1 if empty, 0 otherwise. O(1) */
 int BufIsEmpty(const circ_buf_t* buf);
 
-/* Read from buffer into dst, Returns the number of bytes that were read. O(n) */
+/* Read from buffer into dst, Returns the number of bytes that were read, returns -1 on failure. O(n) */
 ssize_t BufRead(circ_buf_t* buf, char* dst, size_t n_bytes);
 
-/* Write from src into buffer, Returns the number of bytes that were written. O(n) */
+/* Write from src into buffer, Returns the number of bytes that were written, returns -1 on failure. O(n) */
 ssize_t BufWrite(circ_buf_t* buf, const char* src, size_t n_bytes);
 
 #endif /* __CIRC_BUF_H__ */

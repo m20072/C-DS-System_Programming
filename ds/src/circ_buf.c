@@ -17,11 +17,12 @@
 #include <stdlib.h> /* dynamic memory allocations */
 #include "../include/circ_buf.h"
 
-#define OFFSETOF(TYPE, ELEMENT) ((size_t)&(((TYPE *)0)->ELEMENT))
-#define HEAD(BUF) (BUF->arr + BUF->head_idx)
-#define HEAD_INDEX(BUF) (BUF->head_idx)
-#define TAIL_INDEX(BUF) ((BUF->head_idx + BUF->size) % BUF->capacity)
-#define TAIL(BUF) (BUF->arr + TAIL_INDEX(BUF))
+#define OFFSETOF(type, element) ((size_t)&(((type*)0)->element))
+#define HEAD_INDEX(buf) (buf->head_idx)
+#define TAIL_INDEX(buf) ((buf->head_idx + buf->size) % buf->capacity)
+#define HEAD(buf) (buf->arr + buf->head_idx)
+#define TAIL(buf) (buf->arr + TAIL_INDEX(buf))
+#define BYTES_UNTIL_WRAP(buf, index) (buf->capacity - index)
 #define MIN(a,b) ((a < b) ? a : b)
 
 struct circ_buf
@@ -71,8 +72,6 @@ int BufIsEmpty(const circ_buf_t* buf)
 
 ssize_t BufRead(circ_buf_t* buf, char* dst, size_t n_bytes)
 {
-	size_t bytes_to_wrap = 0;
-	size_t bytes_to_read = 0;
 	size_t first_chunk = 0;
 	size_t second_chunk = 0;
 	
@@ -81,46 +80,42 @@ ssize_t BufRead(circ_buf_t* buf, char* dst, size_t n_bytes)
 		return (-1);
 	}
 
-	bytes_to_wrap = buf->capacity - HEAD_INDEX(buf);
-	bytes_to_read = MIN(buf->size, n_bytes);
-	first_chunk = MIN(bytes_to_read, bytes_to_wrap);
-
+	n_bytes = MIN(buf->size, n_bytes);
+	first_chunk = MIN(n_bytes, BYTES_UNTIL_WRAP(buf, HEAD_INDEX(buf)));
+	
 	memcpy(dst, HEAD(buf), first_chunk);
-	HEAD_INDEX(buf) += first_chunk; /* first_chunk % buf->capacity? */
-    if (first_chunk < bytes_to_read) 
+    if (first_chunk < n_bytes) 
     {
-    	second_chunk = (bytes_to_read - first_chunk);
+    	second_chunk = (n_bytes - first_chunk);
         memcpy(dst + first_chunk, buf->arr, second_chunk);
-        HEAD_INDEX(buf) += second_chunk; /* first_chunk % buf->capacity? */
     }
-	buf->size -= bytes_to_read;
-	return bytes_to_read;
+	HEAD_INDEX(buf) += (n_bytes % buf->capacity);
+	buf->size -= n_bytes;
+	return n_bytes;
 }
 
 ssize_t BufWrite(circ_buf_t* buf, const char* src, size_t n_bytes)
 {
-	size_t bytes_to_wrap = 0;
-	size_t bytes_to_write = 0;
 	size_t first_chunk = 0;
 	size_t second_chunk = 0;
-	
+	size_t tail_index = 0;
+
 	if (NULL == buf || NULL == src)
 	{
 		return (-1);
 	}
 	
-	bytes_to_wrap = buf->capacity - TAIL_INDEX(buf);
-	bytes_to_write = MIN(BufFreeSpace(buf), n_bytes);
-	first_chunk = MIN(bytes_to_write, bytes_to_wrap);
+	tail_index = TAIL_INDEX(buf);
+	n_bytes = MIN(buf->capacity - buf->size, n_bytes);
+	first_chunk = MIN(n_bytes, BYTES_UNTIL_WRAP(buf, tail_index));
 	
-	memcpy(TAIL(buf), src, first_chunk);
-	buf->size += first_chunk; /* needed before the if, incase the condition is met */
+	memcpy(buf->arr + tail_index, src, first_chunk);
 
-	if(first_chunk < bytes_to_write)
+	if(first_chunk < n_bytes)
 	{
-		second_chunk = bytes_to_write - first_chunk;
-		memcpy(TAIL(buf), src + first_chunk, second_chunk);
-		buf->size += second_chunk;
+		second_chunk = n_bytes - first_chunk;
+		memcpy(buf->arr, src + first_chunk, second_chunk);
 	}
-	return bytes_to_write;
+	buf->size += n_bytes;
+	return n_bytes;
 }

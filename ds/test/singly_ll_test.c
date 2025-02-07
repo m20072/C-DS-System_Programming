@@ -14,11 +14,11 @@
 
 
 #include <stdio.h> /* printf */
-#include <assert.h> /* assert */
 #include "../include/singly_ll.h"
 
-#define FORMAT		"\x1b[1;32m"
+#define FORMAT		"\x1b[1;36m"
 #define UNFORMAT	"\x1b[1;0m"
+#define FAIL_FORMAT	"\x1b[1;31m"
 
 static int IsMatch(void* data1, void* data2)
 {
@@ -31,99 +31,206 @@ static int AddInt(void* data, void* param)
 	return 0;
 }
 
-static void TestListCreateDestroy(void)
+static int TestListCreateDestroy(void)
 {
 	slist_t* list = NULL;
+	int status = 0;
 	
 	printf("Testing List Create/Destroy...");
 	list = ListCreate();
-	assert(NULL != list);
-	assert(1 == ListIsEmpty(list));
-	assert(0 == ListCount(list));
+	
+	if (NULL == list)
+	{
+		printf(FAIL_FORMAT "\n\tFAILED: List creation returned NULL\n" UNFORMAT);
+		return 1;
+	}
+	
+	if (0 == ListIsEmpty(list))
+	{
+		printf(FAIL_FORMAT "\n\tFAILED: Expected empty list, but got non-empty\n" UNFORMAT);
+		status = 1;
+	}
+	
+	if (0 != ListCount(list))
+	{
+		printf(FAIL_FORMAT "\n\tFAILED: Expected count 0, but got %lu\n" UNFORMAT, 
+			   (unsigned long)ListCount(list));
+		status = 1;
+	}
 	
 	ListDestroy(list);
-	printf(FORMAT "\tPASSED\n" UNFORMAT);
+	
+	if (0 == status)
+	{
+		printf(FORMAT "\tPASSED\n" UNFORMAT);
+	}
+	return status;
 }
 
-static void TestListInsertRemove(void)
+static int TestListInsertRemove(void)
 {
 	slist_t* list = NULL;
 	slist_itr_t itr = NULL;
 	int val1 = 42;
 	int val2 = 24;
+	int status = 0;
 	
 	printf("Testing List Insert/Remove...");
 	list = ListCreate();
-	assert(NULL != list);
+	
+	if (NULL == list)
+	{
+		printf(FAIL_FORMAT "\n\tFAILED: List creation returned NULL\n" UNFORMAT);
+		return 1;
+	}
 
 	itr = ListItrEnd(list);
-	assert(NULL != ListInsertBefore(itr, &val1));
-	assert(1 == ListCount(list));
+	if (NULL == ListInsertBefore(itr, &val1))
+	{
+		printf(FAIL_FORMAT "\n\tFAILED: Insert before end failed\n" UNFORMAT);
+		status = 1;
+	}
+	
+	if (1 != ListCount(list))
+	{
+		printf(FAIL_FORMAT "\n\tFAILED: Expected count 1, but got %lu\n" UNFORMAT,
+			   (unsigned long)ListCount(list));
+		status = 1;
+	}
 	
 	itr = ListItrBegin(list);
-	assert(NULL != ListInsertBefore(itr,  &val2));
-	assert(2 == ListCount(list));
+	if (NULL == ListInsertBefore(itr, &val2))
+	{
+		printf(FAIL_FORMAT "\n\tFAILED: Insert before begin failed\n" UNFORMAT);
+		status = 1;
+	}
+	
+	if (2 != ListCount(list))
+	{
+		printf(FAIL_FORMAT "\n\tFAILED: Expected count 2, but got %lu\n" UNFORMAT,
+			   (unsigned long)ListCount(list));
+		status = 1;
+	}
 
 	itr = ListItrBegin(list);
 	itr = ListRemove(itr);
-	assert(1 == ListCount(list));
+	if (1 != ListCount(list))
+	{
+		printf(FAIL_FORMAT "\n\tFAILED: Expected count 1 after remove, but got %lu\n" UNFORMAT,
+			   (unsigned long)ListCount(list));
+		status = 1;
+	}
 
 	itr = ListItrBegin(list);
 	itr = ListRemove(itr);
-	assert(0 == ListCount(list));
+	if (0 != ListCount(list))
+	{
+		printf(FAIL_FORMAT "\n\tFAILED: Expected count 0 after remove, but got %lu\n" UNFORMAT,
+			   (unsigned long)ListCount(list));
+		status = 1;
+	}
 
 	ListDestroy(list);
-	printf(FORMAT "\tPASSED\n" UNFORMAT);
+	
+	if (0 == status)
+	{
+		printf(FORMAT "\tPASSED\n" UNFORMAT);
+	}
+	return status;
 }
 
-static void TestListIterators(void)
+static int TestListIterators(void)
 {
 	slist_t* list = NULL;
 	slist_itr_t itr1 = NULL;
 	slist_itr_t itr2 = NULL;
 	int val = 42;
+	int status = 0;
 
 	printf("Testing List Iterators...");
 	list = ListCreate();
-	assert(NULL != list);
+	
+	if (NULL == list)
+	{
+		printf(FAIL_FORMAT "\n\tFAILED: List creation returned NULL\n" UNFORMAT);
+		return 1;
+	}
 
 	itr1 = ListItrEnd(list);
-	assert(NULL != ListInsertBefore(itr1, &val));
+	if (NULL == ListInsertBefore(itr1, &val))
+	{
+		printf(FAIL_FORMAT "\n\tFAILED: Insert before end failed\n" UNFORMAT);
+		status = 1;
+	}
 
 	itr1 = ListItrBegin(list);
 	itr2 = ListItrEnd(list);
-	assert(0 == ListItrIsEqual(itr1, itr2));
+	if (0 != ListItrIsEqual(itr1, itr2))
+	{
+		printf(FAIL_FORMAT "\n\tFAILED: Begin and End iterators should not be equal\n" UNFORMAT);
+		status = 1;
+	}
 
-	itr2 = ListItrNext(itr1);
-	assert(ListItrIsEqual(itr2, ListItrEnd(list)));
+	itr1 = ListItrNext(itr1);
+	if (!ListItrIsEqual(itr1, itr2))
+	{
+		printf(FAIL_FORMAT "\n\tFAILED: Next of Begin should equal End\n" UNFORMAT);
+		status = 1;
+	}
 
 	ListDestroy(list);
-	printf(FORMAT "\tPASSED\n" UNFORMAT);
+	
+	if (0 == status)
+	{
+		printf(FORMAT "\tPASSED\n" UNFORMAT);
+	}
+	return status;
 }
 
-static void TestListDataAccess(void)
+static int TestListDataAccess(void)
 {
 	slist_t* list = NULL;
 	slist_itr_t itr = NULL;
 	int val1 = 42;
 	int val2 = 24;
+	int status = 0;
 
 	printf("Testing List Data Access...");
 	list = ListCreate();
-	assert(NULL != list);
+	
+	if (NULL == list)
+	{
+		printf(FAIL_FORMAT "\n\tFAILED: List creation returned NULL\n" UNFORMAT);
+		return 1;
+	}
 
 	itr = ListItrEnd(list);
 	itr = ListInsertBefore(itr, &val1);
-	assert(val1 == *(int*)ListGetData(itr));
+	if (val1 != *(int*)ListGetData(itr))
+	{
+		printf(FAIL_FORMAT "\n\tFAILED: Expected data %d, but got %d\n" UNFORMAT,
+			   val1, *(int*)ListGetData(itr));
+		status = 1;
+	}
 
 	ListSetData(itr, &val2);
-	assert(val2 == *(int*)ListGetData(itr));
+	if (val2 != *(int*)ListGetData(itr))
+	{
+		printf(FAIL_FORMAT "\n\tFAILED: After SetData expected %d, but got %d\n" UNFORMAT,
+			   val2, *(int*)ListGetData(itr));
+		status = 1;
+	}
 	
 	ListDestroy(list);
-	printf(FORMAT "\tPASSED\n" UNFORMAT);
+	
+	if (0 == status)
+	{
+		printf(FORMAT "\tPASSED\n" UNFORMAT);
+	}
+	return status;
 }
 
-static void TestListFind(void)
+static int TestListFind(void)
 {
 	slist_t* list = NULL;
 	slist_itr_t itr = NULL;
@@ -131,10 +238,16 @@ static void TestListFind(void)
 	int target = 3;
 	size_t i = 0;
 	size_t n_values = 5;
+	int status = 0;
 
 	printf("Testing List Find...");
 	list = ListCreate();
-	assert(NULL != list);
+	
+	if (NULL == list)
+	{
+		printf(FAIL_FORMAT "\n\tFAILED: List creation returned NULL\n" UNFORMAT);
+		return 1;
+	}
 
 	itr = ListItrEnd(list);
 	for (i = 0; i < n_values; ++i)
@@ -143,14 +256,29 @@ static void TestListFind(void)
 	}
 
 	itr = ListFind(ListItrBegin(list), ListItrEnd(list), IsMatch, &target);
-	assert(NULL != itr);
-	assert(target == *(int*)ListGetData(itr));
+	if (ListItrEnd(list) == itr)
+	{
+		printf(FAIL_FORMAT "\n\tFAILED: Find returned End iterator for existing value\n" UNFORMAT);
+		status = 1;
+	}
+	
+	if (target != *(int*)ListGetData(itr))
+	{
+		printf(FAIL_FORMAT "\n\tFAILED: Find returned wrong value. Expected %d, got %d\n" UNFORMAT,
+			   target, *(int*)ListGetData(itr));
+		status = 1;
+	}
 
 	ListDestroy(list);
-	printf(FORMAT "\t\tPASSED\n" UNFORMAT);
+	
+	if (0 == status)
+	{
+		printf(FORMAT "\t\tPASSED\n" UNFORMAT);
+	}
+	return status;
 }
 
-static void TestListForEach(void)
+static int TestListForEach(void)
 {
 	slist_t* list = NULL;
 	slist_itr_t itr = NULL;
@@ -159,10 +287,16 @@ static void TestListForEach(void)
 	int param = 1;
 	size_t i = 0;
 	size_t n_values = 5;
+	int status = 0;
 
 	printf("Testing List ForEach...");
 	list = ListCreate();
-	assert(NULL != list);
+	
+	if (NULL == list)
+	{
+		printf(FAIL_FORMAT "\n\tFAILED: List creation returned NULL\n" UNFORMAT);
+		return 1;
+	}
 
 	itr = ListItrEnd(list);
 	for (i = 0; i < n_values; ++i)
@@ -174,62 +308,109 @@ static void TestListForEach(void)
 
 	for (i = 0; i < n_values; ++i)
 	{
-		assert(expected[i] == values[i]);
+		if (expected[i] != values[i])
+		{
+			printf(FAIL_FORMAT "\n\tFAILED: At index %lu, expected %d but got %d\n" UNFORMAT,
+				   (unsigned long)i, expected[i], values[i]);
+			status = 1;
+		}
 	}
 
 	ListDestroy(list);
-	printf(FORMAT "\t\tPASSED\n" UNFORMAT);
+	
+	if (0 == status)
+	{
+		printf(FORMAT "\t\tPASSED\n" UNFORMAT);
+	}
+	return status;
 }
 
-static void TestListAppend(void)
+static int TestListAppend(void)
 {
-    slist_t* list1 = NULL;
-    slist_t* list2 = NULL;
-    slist_itr_t itr = NULL;
-    int values1[] = {1, 2, 3};
-    int values2[] = {4, 5, 6};
+	slist_t* list1 = NULL;
+	slist_t* list2 = NULL;
+	slist_itr_t itr = NULL;
+	int values1[] = {1, 2, 3};
+	int values2[] = {4, 5, 6};
 	int expected[] = {1, 2, 3, 4, 5, 6};
-    size_t i = 0;
+	size_t i = 0;
+	int status = 0;
 
-    printf("Testing List Append...");
-    list1 = ListCreate();
-    list2 = ListCreate();
-    assert(NULL != list1 && NULL != list2);
+	printf("Testing List Append...");
+	list1 = ListCreate();
+	list2 = ListCreate();
+	
+	if (NULL == list1 || NULL == list2)
+	{
+		printf(FAIL_FORMAT "\n\tFAILED: List creation returned NULL\n" UNFORMAT);
+		return 1;
+	}
 
-    for (i = 0; i < 3; ++i)
-    {
-        itr = ListItrEnd(list1);
-        itr = ListInsertBefore(itr, &values1[i]);	
+	for (i = 0; i < 3; ++i)
+	{
+		itr = ListItrEnd(list1);
+		itr = ListInsertBefore(itr, &values1[i]);	
 
-        itr = ListItrEnd(list2);
-        itr = ListInsertBefore(itr, &values2[i]);
-    }
+		itr = ListItrEnd(list2);
+		itr = ListInsertBefore(itr, &values2[i]);
+	}
 
-    list1 = ListAppend(list1, list2);
-    assert(6 == ListCount(list1));
-	assert(1 == ListIsEmpty(list2));
-    
-    itr = ListItrBegin(list1);
-    for (i = 0; i < 6; ++i)
-    {
-        assert(expected[i] == *(int*)ListGetData(itr));
-        itr = ListItrNext(itr);
-    }
+	list1 = ListAppend(list1, list2);
+	if (6 != ListCount(list1))
+	{
+		printf(FAIL_FORMAT "\n\tFAILED: Expected count 6 after append, but got %lu\n" UNFORMAT,
+			   (unsigned long)ListCount(list1));
+		status = 1;
+	}
+	
+	if (1 != ListIsEmpty(list2))
+	{
+		printf(FAIL_FORMAT "\n\tFAILED: List2 should be empty after append\n" UNFORMAT);
+		status = 1;
+	}
+	
+	itr = ListItrBegin(list1);
+	for (i = 0; i < 6; ++i)
+	{
+		if (expected[i] != *(int*)ListGetData(itr))
+		{
+			printf(FAIL_FORMAT "\n\tFAILED: At index %lu, expected %d but got %d\n" UNFORMAT,
+				   (unsigned long)i, expected[i], *(int*)ListGetData(itr));
+			status = 1;
+		}
+		itr = ListItrNext(itr);
+	}
 
-    ListDestroy(list1);
-    printf(FORMAT "\t\tPASSED\n" UNFORMAT);
+	ListDestroy(list1);
+	ListDestroy(list2);
+	
+	if (0 == status)
+	{
+		printf(FORMAT "\t\tPASSED\n" UNFORMAT);
+	}
+	return status;
 }
 
 int main(void)
 {	
-	TestListCreateDestroy();
-	TestListInsertRemove();
-	TestListIterators();
-	TestListDataAccess();
-	TestListFind();
-	TestListForEach();
-	TestListAppend();
+	int status = 0;
+	
+	status |= TestListCreateDestroy();
+	status |= TestListInsertRemove();
+	status |= TestListIterators();
+	status |= TestListDataAccess();
+	status |= TestListFind();
+	status |= TestListForEach();
+	status |= TestListAppend();
 
-	printf(FORMAT "\nAll tests completed successfully\n" UNFORMAT);
-	return 0;
+	if (0 == status)
+	{
+		printf(FORMAT "\nAll tests completed successfully\n" UNFORMAT);
+	}
+	else
+	{
+		printf(FAIL_FORMAT "\nSome tests failed\n" UNFORMAT);
+	}
+	
+	return status;
 }

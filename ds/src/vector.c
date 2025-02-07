@@ -59,7 +59,7 @@ void VectorDestroy(vector_t* vector)
 {
     assert(NULL != vector);
     
-    memset(vector->vector_head, 0, vector->capacity * vector->element_size);
+    /*memset(vector->vector_head, 0, vector->capacity * vector->element_size);*/
 	memset(vector, 0, sizeof(vector_t));
 	
     free(vector->vector_head);

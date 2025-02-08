@@ -8,13 +8,10 @@
 *
 */
 
-
 #include <stdio.h> /* printf */
 #include <string.h> /* strcmp */
 #include <assert.h> /* assert */
 #include "../include/vector.h"
-
-
 
 typedef struct
 {
@@ -33,7 +30,6 @@ int main()
 	CheckVectorTypes();
 	CheckVectorStructs();
 	SuccessPrint();
-	
 	return (0);
 }
 
@@ -113,7 +109,6 @@ void CheckVectorTypes()
 	
 	/* test destroy */
 	VectorDestroy(v);
-	
 }
 
 void CheckVectorStructs()
@@ -193,7 +188,6 @@ void CheckVectorStructs()
 	
 	/* test destroy */
 	VectorDestroy(v);
-	
 }
 
 void SuccessPrint()

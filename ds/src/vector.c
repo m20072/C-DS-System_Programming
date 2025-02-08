@@ -31,9 +31,10 @@ vector_t* VectorCreate(size_t element_size, size_t capacity)
 {
 	vector_t* vector = NULL;
 
-    assert(0 < capacity && 0 < element_size);
-    vector = (vector_t*)malloc(sizeof(vector_t));
+    assert(0 < capacity);
+    assert(0 < element_size);
 
+    vector = (vector_t*)malloc(sizeof(vector_t));
 	if(NULL == vector)
 	{
 		return NULL;
@@ -58,13 +59,12 @@ vector_t* VectorCreate(size_t element_size, size_t capacity)
 void VectorDestroy(vector_t* vector)
 {
     assert(NULL != vector);
-    
+
     /*memset(vector->vector_head, 0, vector->capacity * vector->element_size);*/
-	memset(vector, 0, sizeof(vector_t));
-	
     free(vector->vector_head);
     vector->vector_head = NULL;
-    
+
+    memset(vector, 0, sizeof(vector_t)); /* free vector_head before setting its pointer address to 0 */
     free(vector);
     vector = NULL;
 }

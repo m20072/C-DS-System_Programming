@@ -11,6 +11,7 @@
 *   - Albert
 *
 ******************************************************************************/
+#include <stdio.h>
 #include <stdlib.h> /* Dynamic allocations */
 #include <assert.h> /* assert */
 #include "../include/singly_ll.h"
@@ -53,19 +54,17 @@ slist_t* ListCreate()
 
 void ListDestroy(slist_t* list)
 {
-	node_t* prev = NULL;
-	node_t* curr = NULL;
+	node_t* curr_node = NULL;
+	node_t* next_node = NULL;
 	
 	assert(NULL != list);
 
-	prev = list->head;
-	curr = prev->next;
-
-	while(NULL != curr)
+	curr_node = list->head;
+	while(NULL != curr_node)
 	{
-		free(prev);
-		prev = curr;
-		curr = curr->next;
+		next_node = curr_node->next;
+		free(curr_node);
+		curr_node = next_node;
 	}
 	free(list);
 	list = NULL;

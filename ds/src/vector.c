@@ -60,11 +60,10 @@ void VectorDestroy(vector_t* vector)
 {
     assert(NULL != vector);
 
-    /*memset(vector->vector_head, 0, vector->capacity * vector->element_size);*/
     free(vector->vector_head);
-    vector->vector_head = NULL;
+    /*vector->vector_head = NULL;*/ /* memset to 0 is the same */
 
-    memset(vector, 0, sizeof(vector_t)); /* free vector_head before setting its pointer address to 0 */
+    memset(vector, 0, sizeof(vector_t)); /* free vector_head before setting pointer address to 0 */
     free(vector);
     vector = NULL;
 }

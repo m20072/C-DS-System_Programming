@@ -11,7 +11,7 @@
 *   - 
 *
 ******************************************************************************/
-#include <stdlib.h> /* Dynamic allocations */
+#include <stddef.h>
 #include "../include/singly_ll_exercises.h"
 
 /* Reverses the order of a given slist. */
@@ -22,10 +22,10 @@ node_t* Flip(node_t* head)
 
 	while(NULL != head)
 	{
-		next_tmp = head->next; /* saving what head points to so that we can move to next node even when we change this node next */
-		head->next = prev_tmp; /* making head->next point to NULL (reversing) */
-		prev_tmp = head; /* now prev can be utilized for next iteration as current's iterations head */
-		head = next_tmp; /* next iteration head is next_tmp */
+		next_tmp = head->next;
+		head->next = prev_tmp;
+		prev_tmp = head;
+		head = next_tmp;
 	}
 	return (prev_tmp);
 }

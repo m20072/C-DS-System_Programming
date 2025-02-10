@@ -70,7 +70,7 @@ int ListIsEmpty(slist_t* list);
 slist_itr_t ListFind(slist_itr_t from, slist_itr_t to, match_func_t is_match, const void* data);
 
 /* Applies an action function to each element in the given range
- * Returns 0 if successful, 1 if the action function failed. O(n) */
+ * Returns 0 if successful, otherwise a status if the action function failed. O(n) */
 int ListForEach(slist_itr_t from, slist_itr_t to, action_func_t action_func, const void* param);
 
 /* Receives a destination and a source, appends the src to the destination, leaving the src an empty list. O(1) */

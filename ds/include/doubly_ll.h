@@ -63,12 +63,10 @@ dlist_itr_t DLLItrEnd(const dlist_t* list);
  */
 dlist_itr_t DLLItrNext(dlist_itr_t itr);
 
-
 /* Receives an iterator, returns an iteator to the next element. O(1) 
  * Undefined behavior if the received iterator points to the head.
  */
 dlist_itr_t DLLItrPrev(dlist_itr_t itr);
-
 
 /* Receives two iterators, returns 1 if they are equal (point to the same element), 0 otherwise. O(1) */
 int DLLItrIsEqual(dlist_itr_t itr1, dlist_itr_t itr2);

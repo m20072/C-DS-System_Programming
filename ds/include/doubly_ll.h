@@ -42,7 +42,7 @@ typedef int (*action_func_t) (void* data, void* param);
 /* Creates a new doubl linked list and returns a pointer to it. O(1) */
 dlist_t* DLLCreate();
 
-/* Receives a list ptr, frees all dynamically allocated nodes, and the list itself. O(n) */ /* dont forget memset*/
+/* Receives a list ptr, frees all dynamically allocated nodes, and the list itself. O(n) */
 void DLLDestroy(dlist_t* list);
 
 /* Receives a list ptr, returns the number of elements in the list. O(n) */

@@ -11,9 +11,9 @@
 *   - 
 *
 ******************************************************************************/
-#include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <string.h>
 #include "../include/doubly_ll.h"
 
 typedef struct node node_t;
@@ -56,9 +56,9 @@ dlist_t* DLLCreate()
 	return (dlist);
 }
 
-void DLLDestroy(dlist_t* list) /* memset also before free(list) */
+void DLLDestroy(dlist_t* list)
 {
-	node_t* current_node = list->head.next; /* current_node is a ptr to tail if empty list */
+	node_t* current_node = list->head.next;
 	
 	while(NULL != current_node->next)
 	{
@@ -66,16 +66,19 @@ void DLLDestroy(dlist_t* list) /* memset also before free(list) */
 		free(current_node->prev);
 		current_node->prev = NULL;
 	}
+	
+	memset(list, 0, sizeof(*list));
 	free(list);
+	list = NULL;
 }
 
 dlist_itr_t DLLItrBegin(const dlist_t* list)
 {
-	assert(NULL != list); /* assert on list->head.next?*/
+	assert(NULL != list);
 	return (NodeToItr(list->head.next));
 }
 
-/* return list->tail */
+
 dlist_itr_t DLLItrEnd(const dlist_t* list)
 {
 	assert(NULL != list);
@@ -84,16 +87,14 @@ dlist_itr_t DLLItrEnd(const dlist_t* list)
 
 dlist_itr_t DLLItrNext(dlist_itr_t itr)
 {
-	node_t* next_node = ItrToNode(itr)->next; /* undefined to do so on the tail */
-	assert(next_node); /* remove this? */
+	node_t* next_node = ItrToNode(itr)->next;
 	return (NodeToItr(next_node));
 }
 
 /* undefined behavior if itr is head */
 dlist_itr_t DLLItrPrev(dlist_itr_t itr)
 {
-	node_t* prev_node = ItrToNode(itr)->prev; /* undefined to do so on the tail */
-	assert(prev_node); /* remove this? */
+	node_t* prev_node = ItrToNode(itr)->prev;
 	return (NodeToItr(prev_node));
 }
 
@@ -161,7 +162,8 @@ dlist_itr_t DLLRemove(dlist_itr_t itr)
 	(deleted_node->prev)->next = deleted_node->next;
 	
 	itr = NodeToItr(deleted_node->next);
-	free(deleted_node); /* memset before? */
+	memset(deleted_node, 0, sizeof(*deleted_node));
+	free(deleted_node);
 	return (itr);
 }
 

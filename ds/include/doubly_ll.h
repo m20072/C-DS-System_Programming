@@ -39,7 +39,7 @@ typedef int (*action_func_t) (void* data, void* param);
 
 /******************************************************************************/
 
-/* Creates a new doubl linked list and returns a pointer to it. O(1) */
+/* Creates a new doubly linked list and returns a pointer to it or NULL if failed. O(1) */
 dlist_t* DLLCreate();
 
 /* Receives a list ptr, frees all dynamically allocated nodes, and the list itself. O(n) */

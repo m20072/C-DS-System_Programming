@@ -42,7 +42,7 @@ circ_buf_t* BufCreate(size_t capacity)
 		return NULL;
 	}
 	buffer->capacity = capacity;
-	return buffer;
+	return (buffer);
 }
 
 void BufDestroy(circ_buf_t* buf)
@@ -62,7 +62,7 @@ size_t BufFreeSpace(const circ_buf_t* buf)
 size_t BufSize(const circ_buf_t* buf)
 {
 	assert(NULL != buf);
-	return buf->size;
+	return (buf->size);
 }
 
 int BufIsEmpty(const circ_buf_t* buf)
@@ -75,8 +75,11 @@ ssize_t BufRead(circ_buf_t* buf, char* dst, size_t n_bytes)
 {
 	size_t first_chunk = 0;
 	
-	assert(NULL != buf);
-	assert(NULL != buf);
+	if(NULL == buf || NULL == dst)
+	{
+		errno = EINVAL; /* Invalid Argument */
+		return (-1);
+	}
 
 	n_bytes = MIN(buf->size, n_bytes);
 	first_chunk = MIN(n_bytes, BYTES_UNTIL_WRAP(buf, HEAD_INDEX(buf)));
@@ -86,7 +89,7 @@ ssize_t BufRead(circ_buf_t* buf, char* dst, size_t n_bytes)
     
 	HEAD_INDEX(buf) += (n_bytes % buf->capacity);
 	buf->size -= n_bytes;
-	return n_bytes;
+	return (n_bytes);
 }
 
 ssize_t BufWrite(circ_buf_t* buf, const char* src, size_t n_bytes)
@@ -94,9 +97,12 @@ ssize_t BufWrite(circ_buf_t* buf, const char* src, size_t n_bytes)
 	size_t first_chunk = 0;
 	size_t tail_index = 0;
 	
-	assert(NULL != buf);
-	assert(NULL != src);
-	
+	if (NULL == buf || NULL == src)
+	{
+		errno = EINVAL; /* Invalid Argument */
+		return (-1);
+	}
+
 	tail_index = TAIL_INDEX(buf);
 	n_bytes = MIN(buf->capacity - buf->size, n_bytes);
 	first_chunk = MIN(n_bytes, BYTES_UNTIL_WRAP(buf, tail_index));
@@ -105,5 +111,5 @@ ssize_t BufWrite(circ_buf_t* buf, const char* src, size_t n_bytes)
 	memcpy(buf->arr, src + first_chunk, (n_bytes - first_chunk)); /* second chunk */
 	
 	buf->size += n_bytes;
-	return n_bytes;
+	return (n_bytes);
 }

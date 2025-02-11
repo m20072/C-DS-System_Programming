@@ -56,9 +56,11 @@ srt_itr_t SrtLLItrBegin(const srt_ll_t* list)
 	srt_itr_t struct_itr = { 0 };
 	assert(NULL != list);
 	struct_itr.itr = DLLItrBegin(list->dlist);
+
 	#ifndef NDEBUG 
 	struct_itr.list = (srt_ll_t*)list;
 	#endif
+
 	return (struct_itr);
 }
 
@@ -67,9 +69,11 @@ srt_itr_t SrtLLItrEnd(const srt_ll_t* list)
 	srt_itr_t struct_itr = { 0 };
 	assert(NULL != list);
 	struct_itr.itr = DLLItrEnd(list->dlist);
+
 	#ifndef NDEBUG 
 	struct_itr.list = (srt_ll_t*)list;
 	#endif
+	
 	return (struct_itr);
 }
 
@@ -93,6 +97,12 @@ int SrtLLIsEmpty(const srt_ll_t* list)
 
 int SrtLLItrIsEqual(srt_itr_t itr1, srt_itr_t itr2)
 {
+	#ifndef NDEBUG
+	if (itr1.list != itr2.list)
+	{
+		return (0);
+	}
+	#endif
 	return DLLItrIsEqual(itr1.itr, itr2.itr);
 }
 
@@ -129,12 +139,29 @@ void* SrtLLGetData(srt_itr_t itr)
 int SrtLLForEach(srt_itr_t from, srt_itr_t to, action_func_t action, void* param)
 {
 	assert(NULL != action);
+
+	#ifndef NDEBUG
+	if (from.list != to.list)
+	{
+		return (1);
+	}
+	#endif
+
 	return (DLLForEach(from.itr, to.itr, action, param));
 }
 
 srt_itr_t SrtLLFindIf(srt_itr_t from, srt_itr_t to, match_func_t is_match, void* data)
 {
 	assert(NULL != is_match);
+	assert(NULL != data);
+
+	#ifndef NDEBUG
+	if (from.list != to.list)
+	{
+		return (to);
+	}
+	#endif
+
 	from.itr = DLLFind(from.itr, to.itr, is_match, data);
 	return (from);
 		
@@ -145,21 +172,23 @@ srt_itr_t SrtLLFind(srt_ll_t* list, void* data)
 	srt_itr_t curr_itr = { 0 };
 	srt_itr_t end_itr = { 0 };
 	assert(NULL != list);
+	assert(NULL != data);
 
 	curr_itr = SrtLLItrBegin(list);
 	end_itr = SrtLLItrEnd(list);
 	
-	while(!SrtLLItrIsEqual(curr_itr, end_itr) && (0 != list->is_before(SrtLLGetData(curr_itr), data)))
+	while(!SrtLLItrIsEqual(curr_itr, end_itr) && (0 > list->is_before(SrtLLGetData(curr_itr), data)))
 	{
 		curr_itr = SrtLLItrNext(curr_itr);
 	}
-	return (curr_itr);
+	return((!SrtLLItrIsEqual(curr_itr, end_itr) && (0 == list->is_before(SrtLLGetData(curr_itr), data))) ? curr_itr : end_itr);
 }
 
 srt_itr_t SrtLLInsert(srt_ll_t* list, void* data)
 {
 	srt_itr_t struct_itr = { 0 };
 	assert(NULL != list);
+	assert(NULL != data);
 	
 	struct_itr = SrtLLItrBegin(list);
 	

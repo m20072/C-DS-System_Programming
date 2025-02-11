@@ -32,10 +32,14 @@ static int TestSrtLLFind(void);
 static int TestSrtLLFindIf(void);
 static int TestSrtLLMerge(void);
 
-/* Other Function Prototypes */
+/* User-Defined Funcs Prototypes */
 static int IntComparator(const void* first, const void* second);
 static int IsMatch(const void* data1, const void* data2);
 static int AddInt(void* data, void* param);
+static int FailAfterN(void* data, void* param);
+
+/* Test Helper Prototypes */
+static int VerifyList(srt_ll_t* list, int* expected, size_t size);
 
 /*****************************************************************************/
 
@@ -43,7 +47,7 @@ static int AddInt(void* data, void* param);
 static int IntComparator(const void* first, const void* second)
 {
 	return ((*(int*)first == *(int*)second) ? (0) :
-					((first < second) ? (-1) : (1)));
+				((*(int*)first < *(int*)second) ? (-1) : (1)));
 }
 
 static int IsMatch(const void* first, const void* second)
@@ -51,10 +55,44 @@ static int IsMatch(const void* first, const void* second)
 	return (*(int*)first == *(int*)second);
 }
 
+/* action_t funcs to test with ForEach */
 static int AddInt(void* data, void* param)
 {
 	*(int*)data += *(int*)param;
 	return 0;
+}
+
+static int FailAfterN(void* data, void* param)
+{
+	static int count = 0;
+	(void)data;
+	
+	if (++count >= *(int*)param)
+	{
+		count = 0;
+		return 1;  /* Fail after N operations */
+	}
+	return 0;
+}
+
+/*****************************************************************************/
+
+/* verify order/values of list items against expected */
+static int VerifyList(srt_ll_t* list, int* expected, size_t size)
+{
+	srt_itr_t itr = SrtLLItrBegin(list);
+	size_t i = 0;
+	
+	for (i = 0; i < size && !SrtLLItrIsEqual(itr, SrtLLItrEnd(list)); ++i)
+	{
+		if (*(int*)SrtLLGetData(itr) != expected[i])
+		{
+			return 0;
+		}
+		itr = SrtLLItrNext(itr);
+	}
+	
+	return (i == size);
 }
 
 /*****************************************************************************/
@@ -161,6 +199,7 @@ static int TestSrtLLInsertRemove(void)
 	srt_ll_t* list = NULL;
 	srt_itr_t itr = { 0 };
 	int values[] = {42, 17, 89, 35, 54};
+	int expected[] = {17, 35, 42, 54, 89};
 	int status = 0;
 	size_t i = 0;
 
@@ -187,19 +226,21 @@ static int TestSrtLLInsertRemove(void)
 		}
 	}
 
+	/* Test order after insertions */
 	++g_total_checks;
-	if (5 != SrtLLCount(list))
+	if (!VerifyList(list, expected, sizeof(expected) / sizeof(expected[0])))
 	{
-		printf(FAIL_FORMAT "\n\tFAILED: Expected count 5, got %lu\n" UNFORMAT,
-			   (unsigned long)SrtLLCount(list));
+		printf(FAIL_FORMAT "\n\tFAILED: List not properly ordered after insertions\n" UNFORMAT);
 		++g_failed_checks;
 		status = 1;
 	}
 
-	/* Test removal */
+	/* Test removal from middle */
 	itr = SrtLLItrBegin(list);
+	itr = SrtLLItrNext(itr);
+	itr = SrtLLItrNext(itr);  /* Position at 42 */
 	itr = SrtLLRemove(itr);
-	
+
 	++g_total_checks;
 	if (4 != SrtLLCount(list))
 	{
@@ -209,8 +250,21 @@ static int TestSrtLLInsertRemove(void)
 		status = 1;
 	}
 
+	/* Test insert after remove */
+	{
+		int new_val = 45;
+		itr = SrtLLInsert(list, &new_val);
+		++g_total_checks;
+		if (*(int*)SrtLLGetData(itr) != new_val)
+		{
+			printf(FAIL_FORMAT "\n\tFAILED: Insert after remove failed\n" UNFORMAT);
+			++g_failed_checks;
+			status = 1;
+		}
+	}
+
 	SrtLLDestroy(list);
-	
+
 	if (0 == status)
 	{
 		printf(PASS_FORMAT "\tPASSED\n" UNFORMAT);
@@ -309,8 +363,14 @@ static int TestSrtLLPop(void)
 static int TestSrtLLForEach(void)
 {
 	srt_ll_t* list = NULL;
+	srt_itr_t from = { 0 };
+	srt_itr_t to = { 0 };
 	int values[] = {17, 35, 42, 54, 89};
+	int expected1[] = {27, 45, 52, 64, 99};	/* After adding 10 to all */
+	int expected2[] = {27, 55, 62, 74, 99};	/* After adding 10 to middle values */
 	int add_value = 10;
+	int fail_after = 3;
+	int foreach_output = 0;
 	int status = 0;
 	size_t i = 0;
 
@@ -330,12 +390,52 @@ static int TestSrtLLForEach(void)
 		SrtLLInsert(list, &values[i]);
 	}
 
-	/* Test ForEach */
+	/* Test ForEach on entire list */
 	status = SrtLLForEach(SrtLLItrBegin(list), SrtLLItrEnd(list), AddInt, &add_value);
 	++g_total_checks;
 	if (0 != status)
 	{
 		printf(FAIL_FORMAT "\n\tFAILED: ForEach returned non-zero status\n" UNFORMAT);
+		++g_failed_checks;
+		status = 1;
+	}
+
+	++g_total_checks;
+	if (!VerifyList(list, expected1, sizeof(expected1) / sizeof(expected1[0])))
+	{
+		printf(FAIL_FORMAT "\n\tFAILED: ForEach on entire list does not match expected\n" UNFORMAT);
+		++g_failed_checks;
+		status = 1;
+	}
+
+	/* Test ForEach on partial range */
+	from = SrtLLItrNext(SrtLLItrBegin(list));
+	to = SrtLLItrPrev(SrtLLItrEnd(list));
+		
+	status = SrtLLForEach(from, to, AddInt, &add_value);
+	++g_total_checks;
+	if (0 != status)
+	{
+		printf(FAIL_FORMAT "\n\tFAILED: ForEach returned non-zero status\n" UNFORMAT);
+		++g_failed_checks;
+		status = 1;
+	}
+	
+	++g_total_checks;
+	if (!VerifyList(list, expected2, sizeof(expected2) / sizeof(expected2[0])))
+	{
+		printf(FAIL_FORMAT "\n\tFAILED: ForEach on partial list does not match expected\n" UNFORMAT);
+		++g_failed_checks;
+		status = 1;
+	}
+
+	/* Test early termination */
+	foreach_output = SrtLLForEach(SrtLLItrBegin(list), SrtLLItrEnd(list),
+						 FailAfterN, &fail_after);
+	++g_total_checks;
+	if (1 != foreach_output)
+	{
+		printf(FAIL_FORMAT "\n\tFAILED: ForEach didn't terminate early\n" UNFORMAT);
 		++g_failed_checks;
 		status = 1;
 	}
@@ -352,8 +452,9 @@ static int TestSrtLLForEach(void)
 static int TestSrtLLFind(void)
 {
 	srt_ll_t* list = NULL;
-	int values[] = {17, 35, 42, 54, 89};
+	int values[] = {17, 35, 42, 42, 54, 89};
 	int search_value = 42;
+	int non_existent = 99;
 	srt_itr_t founitr = { 0 };
 	int status = 0;
 	size_t i = 0;
@@ -384,11 +485,42 @@ static int TestSrtLLFind(void)
 		status = 1;
 	}
 
+	/* Test Find with duplicate value - should find first occurrence */
+	{
+		srt_itr_t first_found = SrtLLFind(list, &search_value);
+		srt_itr_t begin = SrtLLItrBegin(list);
+		size_t position = 0;
+
+		while (!SrtLLItrIsEqual(begin, first_found))
+		{
+			begin = SrtLLItrNext(begin);
+			++position;
+		}
+
+		++g_total_checks;
+		if (position != 2)  /* First 42 should be at index 2 */
+		{
+			printf(FAIL_FORMAT "\n\tFAILED: Find didn't return first occurrence\n" UNFORMAT);
+			++g_failed_checks;
+			status = 1;
+		}
+	}
+
+	/* Test Find with non-existent value */
+	founitr = SrtLLFind(list, &non_existent);
+	++g_total_checks;
+	if (!SrtLLItrIsEqual(founitr, SrtLLItrEnd(list)))
+	{
+		printf(FAIL_FORMAT "\n\tFAILED: Find didn't return end for non-existent value\n" UNFORMAT);
+		++g_failed_checks;
+		status = 1;
+	}
+
 	SrtLLDestroy(list);
 	
 	if (0 == status)
 	{
-		printf(PASS_FORMAT "\tPASSED\n" UNFORMAT);
+		printf(PASS_FORMAT "\t\tPASSED\n" UNFORMAT);
 	}
 	return status;
 }
@@ -433,7 +565,7 @@ static int TestSrtLLFindIf(void)
 	
 	if (0 == status)
 	{
-		printf(PASS_FORMAT "\tPASSED\n" UNFORMAT);
+		printf(PASS_FORMAT "\t\tPASSED\n" UNFORMAT);
 	}
 	return status;
 }
@@ -444,6 +576,7 @@ static int TestSrtLLMerge(void)
 	srt_ll_t* list2 = NULL;
 	int values1[] = {17, 42, 89};
 	int values2[] = {35, 54};
+	int expected[] = {17, 35, 42, 54, 89};
 	int status = 0;
 	size_t i = 0;
 
@@ -469,7 +602,9 @@ static int TestSrtLLMerge(void)
 	}
 
 	/* Test Merge */
-	list1 = SrtLLMerge(list1, list2);
+	SrtLLMerge(list1, list2);
+	
+	/* Check merged list size */
 	++g_total_checks;
 	if (5 != SrtLLCount(list1))
 	{
@@ -477,11 +612,21 @@ static int TestSrtLLMerge(void)
 		++g_failed_checks;
 		status = 1;
 	}
-
+	
+	/* Check source list is empty */
 	++g_total_checks;
 	if (0 != SrtLLCount(list2))
 	{
 		printf(FAIL_FORMAT "\n\tFAILED: Source list not empty after merge\n" UNFORMAT);
+		++g_failed_checks;
+		status = 1;
+	}
+
+	/* Verify merged list order */
+	++g_total_checks;
+	if (!VerifyList(list1, expected, sizeof(expected) / sizeof(expected[0])))
+	{
+		printf(FAIL_FORMAT "\n\tFAILED: Merged list not properly ordered\n" UNFORMAT);
 		++g_failed_checks;
 		status = 1;
 	}
@@ -491,7 +636,7 @@ static int TestSrtLLMerge(void)
 	
 	if (0 == status)
 	{
-		printf(PASS_FORMAT "\tPASSED\n" UNFORMAT);
+		printf(PASS_FORMAT "\t\tPASSED\n" UNFORMAT);
 	}
 	return status;
 }
@@ -525,5 +670,3 @@ int main(void)
 	}
 	return 0;
 }
-
-

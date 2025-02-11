@@ -11,7 +11,6 @@
 *   - Albert
 *
 ******************************************************************************/
-#include <stdio.h>
 #include <stdlib.h> /* Dynamic allocations */
 #include <assert.h> /* assert */
 #include "../include/singly_ll.h"

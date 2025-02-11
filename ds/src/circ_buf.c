@@ -7,14 +7,15 @@
 * Author:
 *   Matan Chen
 *
-* Review History: Albert
-*   - 
+* Review History:
+*   - Albert
 *
 ******************************************************************************/
 #include <sys/types.h> /* ssize_t */
 #include <assert.h> /* assert */
 #include <string.h> /* memcpy */
 #include <stdlib.h> /* dynamic memory allocations */
+#include <errno.h>  /* errno */
 #include "../include/circ_buf.h"
 
 #define OFFSETOF(type, element) ((size_t)&(((type*)0)->element))
@@ -73,7 +74,6 @@ int BufIsEmpty(const circ_buf_t* buf)
 ssize_t BufRead(circ_buf_t* buf, char* dst, size_t n_bytes)
 {
 	size_t first_chunk = 0;
-	size_t second_chunk = 0;
 	
 	if (NULL == buf || NULL == dst)
 	{
@@ -84,11 +84,8 @@ ssize_t BufRead(circ_buf_t* buf, char* dst, size_t n_bytes)
 	first_chunk = MIN(n_bytes, BYTES_UNTIL_WRAP(buf, HEAD_INDEX(buf)));
 	
 	memcpy(dst, HEAD(buf), first_chunk);
-    if (first_chunk < n_bytes) 
-    {
-    	second_chunk = (n_bytes - first_chunk);
-        memcpy(dst + first_chunk, buf->arr, second_chunk);
-    }
+    memcpy(dst + first_chunk, buf->arr, (n_bytes - first_chunk)); /* second chunk */
+    
 	HEAD_INDEX(buf) += (n_bytes % buf->capacity);
 	buf->size -= n_bytes;
 	return n_bytes;
@@ -97,25 +94,18 @@ ssize_t BufRead(circ_buf_t* buf, char* dst, size_t n_bytes)
 ssize_t BufWrite(circ_buf_t* buf, const char* src, size_t n_bytes)
 {
 	size_t first_chunk = 0;
-	size_t second_chunk = 0;
 	size_t tail_index = 0;
-
-	if (NULL == buf || NULL == src)
-	{
-		return (-1);
-	}
+	
+	assert(NULL != buf);
+	assert(NULL != src);
 	
 	tail_index = TAIL_INDEX(buf);
 	n_bytes = MIN(buf->capacity - buf->size, n_bytes);
 	first_chunk = MIN(n_bytes, BYTES_UNTIL_WRAP(buf, tail_index));
 	
 	memcpy(buf->arr + tail_index, src, first_chunk);
-
-	if(first_chunk < n_bytes)
-	{
-		second_chunk = n_bytes - first_chunk;
-		memcpy(buf->arr, src + first_chunk, second_chunk);
-	}
+	memcpy(buf->arr, src + first_chunk, (n_bytes - first_chunk)); /* second chunk */
+	
 	buf->size += n_bytes;
 	return n_bytes;
 }

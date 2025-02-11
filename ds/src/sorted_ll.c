@@ -12,9 +12,9 @@
 *
 ******************************************************************************/
 
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
+#include <stdlib.h> /* allocations and free */
+#include <string.h> /* memset */
+#include <assert.h> /* assert */
 #include "../include/sorted_ll.h"
 
 struct srt_ll
@@ -22,11 +22,6 @@ struct srt_ll
 	dlist_t* dlist;
 	is_before_t is_before;
 };
-
-/*struct srt_itr
-{
-	dlist_itr_t itr;
-};*/
 
 srt_ll_t* SrtLLCreate(is_before_t is_before)
 {
@@ -39,6 +34,7 @@ srt_ll_t* SrtLLCreate(is_before_t is_before)
 	list->dlist = DLLCreate();
 	if(NULL == list->dlist)
 	{
+		memset(list, 0, sizeof(*list));
 		free(list);
 		return NULL;
 	}
@@ -50,7 +46,7 @@ srt_ll_t* SrtLLCreate(is_before_t is_before)
 void SrtLLDestroy(srt_ll_t* list)
 {
 	DLLDestroy(list->dlist);
-	memset(list, 0, sizeof(*list)); /* same as setting list->dlist = NULL, but does it to all fields of list */
+	memset(list, 0, sizeof(*list));
 	free(list);
 }
 
@@ -135,12 +131,9 @@ int SrtLLForEach(srt_itr_t from, srt_itr_t to, action_func_t action, void* param
 	return (DLLForEach(from.itr, to.itr, action, param));
 }
 
-
-/* return 'to' if not found, otherwise return the iterator of node than match the function find if*/
 srt_itr_t SrtLLFindIf(srt_itr_t from, srt_itr_t to, match_func_t is_match, void* data)
 {
 	assert(NULL != is_match);
-	/* gets from and to iterators, and tries to find according to */
 	from.itr = DLLFind(from.itr, to.itr, is_match, data);
 	return (from);
 		
@@ -155,12 +148,11 @@ srt_itr_t SrtLLFind(srt_ll_t* list, void* data)
 	curr_itr = SrtLLItrBegin(list);
 	end_itr = SrtLLItrEnd(list);
 	
-	/* traverse until not bigger, and then check if equal, if not, return the tail */
-	while(!SrtLLItrIsEqual(curr_itr, end_itr) && (0 < list->is_before(SrtLLGetData(curr_itr), data))) /* while curr_itr data is before data, continue to traverse */
+	while(!SrtLLItrIsEqual(curr_itr, end_itr) && (0 < list->is_before(SrtLLGetData(curr_itr), data)))
 	{
-		curr_itr = SrtLLItrNext(curr_itr); /* curr_itr isnt ==  end_itr AND is_before returned negative value meaning that curr_itr is before data */
+		curr_itr = SrtLLItrNext(curr_itr);
 	}
-	return((0 == list->is_before(SrtLLGetData(curr_itr), data)) ? curr_itr : end_itr); /* if its equal return it, otherwise return end_itr */
+	return((0 == list->is_before(SrtLLGetData(curr_itr), data)) ? curr_itr : end_itr);
 }
 
 srt_itr_t SrtLLInsert(srt_ll_t* list, void* data)
@@ -178,7 +170,7 @@ srt_itr_t SrtLLInsert(srt_ll_t* list, void* data)
 	return struct_itr;
 }
 
-srt_ll_t* SrtLLMerge(srt_ll_t* dst, srt_ll_t* src) /* assuming both lists have the same sorting? assert check that? if check that? or no need to check at all */
+srt_ll_t* SrtLLMerge(srt_ll_t* dst, srt_ll_t* src)
 {
 	srt_itr_t where = { 0 };
 	srt_itr_t from = { 0 };
@@ -197,11 +189,11 @@ srt_ll_t* SrtLLMerge(srt_ll_t* dst, srt_ll_t* src) /* assuming both lists have t
 	
 	while(!SrtLLItrIsEqual(to, src_end) && !SrtLLItrIsEqual(where, dst_end))
 	{
-		if((0 >= dst->is_before(SrtLLGetData(to), SrtLLGetData(where)))) /* is to smaller than where?  */
+		if((0 >= dst->is_before(SrtLLGetData(to), SrtLLGetData(where)))) /* according to dst is_before */
 		{
 			to = SrtLLItrNext(to);
 		}
-		else /*if(!SrtLLItrIsEqual(from, to))*/
+		else
 		{
 			if(!SrtLLItrIsEqual(from, to))
 			{
@@ -211,15 +203,8 @@ srt_ll_t* SrtLLMerge(srt_ll_t* dst, srt_ll_t* src) /* assuming both lists have t
 			where = SrtLLItrNext(where);
 		}
 	}
-
-	/* once we get here, either the 'where' is on dummy or the 'to' is on dummy*/
-	/* either way, we can set 'to' to be on dummy (even if it already is thats fine) */
-	/* and we can just splice all of that behind 'where', whether 'where' is the dummy or not doesnt matter */
 	to.itr = src_end.itr;
-
-	/*if(!SrtLLItrIsEqual(from, to))*/
-	DLLSplice(where.itr, from.itr, to.itr); /* do a final splice when we reached src_end */
-	
+	DLLSplice(where.itr, from.itr, to.itr);
 	return dst;
 }
 

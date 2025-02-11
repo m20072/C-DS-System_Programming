@@ -8,7 +8,7 @@
 *   Matan Chen
 *
 * Review History:
-*   - 
+*   - Ofir
 *
 ******************************************************************************/
 
@@ -45,6 +45,7 @@ srt_ll_t* SrtLLCreate(is_before_t is_before)
 
 void SrtLLDestroy(srt_ll_t* list)
 {
+	assert(NULL != list);
 	DLLDestroy(list->dlist);
 	memset(list, 0, sizeof(*list));
 	free(list);
@@ -104,13 +105,13 @@ srt_itr_t SrtLLRemove(srt_itr_t itr)
 
 void* SrtLLPopFront(srt_ll_t* list)
 {
-	assert(list);
+	assert(NULL != list);
 	return (DLLPopFront(list->dlist));
 }
 
 void* SrtLLPopBack(srt_ll_t* list)
 {
-	assert(list);
+	assert(NULL != list);
 	return (DLLPopBack(list->dlist));
 }
 
@@ -148,11 +149,11 @@ srt_itr_t SrtLLFind(srt_ll_t* list, void* data)
 	curr_itr = SrtLLItrBegin(list);
 	end_itr = SrtLLItrEnd(list);
 	
-	while(!SrtLLItrIsEqual(curr_itr, end_itr) && (0 < list->is_before(SrtLLGetData(curr_itr), data)))
+	while(!SrtLLItrIsEqual(curr_itr, end_itr) && (0 != list->is_before(SrtLLGetData(curr_itr), data)))
 	{
 		curr_itr = SrtLLItrNext(curr_itr);
 	}
-	return((0 == list->is_before(SrtLLGetData(curr_itr), data)) ? curr_itr : end_itr);
+	return (curr_itr);
 }
 
 srt_itr_t SrtLLInsert(srt_ll_t* list, void* data)

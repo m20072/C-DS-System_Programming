@@ -75,10 +75,8 @@ ssize_t BufRead(circ_buf_t* buf, char* dst, size_t n_bytes)
 {
 	size_t first_chunk = 0;
 	
-	if (NULL == buf || NULL == dst)
-	{
-		return (-1);
-	}
+	assert(NULL != buf);
+	assert(NULL != buf);
 
 	n_bytes = MIN(buf->size, n_bytes);
 	first_chunk = MIN(n_bytes, BYTES_UNTIL_WRAP(buf, HEAD_INDEX(buf)));

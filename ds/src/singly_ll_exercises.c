@@ -8,10 +8,10 @@
 *   Matan Chen
 *
 * Review History:
-*   - 
+*   - Daniel
 *
 ******************************************************************************/
-#include <stddef.h>
+#include <stddef.h> /* size_t */
 #include "../include/singly_ll_exercises.h"
 
 /* Reverses the order of a given slist. */

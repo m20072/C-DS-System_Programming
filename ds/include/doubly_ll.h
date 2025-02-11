@@ -8,13 +8,13 @@
 *   Matan Chen
 *
 * Review History:
-*   - 
+*   - Daniel
 *
 ******************************************************************************/
 
 #ifndef __DOUBLY_LL_H__
 #define __DOUBLY_LL_H__
-#include <stddef.h>
+#include <stddef.h> /* size_t */
 
 typedef struct dlist dlist_t;
 typedef struct node* dlist_itr_t;

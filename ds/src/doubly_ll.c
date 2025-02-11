@@ -8,13 +8,14 @@
 *   Matan Chen
 *
 * Review History:
-*   - 
+*   - Daniel
 *
 ******************************************************************************/
-#include <stdlib.h>
-#include <assert.h>
-#include <string.h>
+#include <stdlib.h> /* allocations and free */
+#include <assert.h> /* assert */
+#include <string.h> /* memset */
 #include "../include/doubly_ll.h"
+
 
 typedef struct node node_t;
 
@@ -58,11 +59,15 @@ dlist_t* DLLCreate()
 
 void DLLDestroy(dlist_t* list)
 {
-	node_t* current_node = list->head.next;
+	node_t* current_node = NULL;
+	
+	assert(NULL != list);
+	current_node = list->head.next;
 	
 	while(NULL != current_node->next)
 	{
 		current_node = current_node->next;
+		memset(current_node->prev, 0, sizeof(node_t));
 		free(current_node->prev);
 		current_node->prev = NULL;
 	}
@@ -91,7 +96,6 @@ dlist_itr_t DLLItrNext(dlist_itr_t itr)
 	return (NodeToItr(next_node));
 }
 
-/* undefined behavior if itr is head */
 dlist_itr_t DLLItrPrev(dlist_itr_t itr)
 {
 	node_t* prev_node = ItrToNode(itr)->prev;
@@ -121,27 +125,31 @@ int DLLItrIsEqual(dlist_itr_t itr1, dlist_itr_t itr2)
 dlist_itr_t DLLPushFront(dlist_t* list, void* data)
 {
 	assert(NULL != list);
-	return DLLInsertBefore(list, NodeToItr(list->head.next), data);
+	return DLLInsertBefore(list, DLLItrBegin(list), data);
 }
 
 
 dlist_itr_t DLLPushBack(dlist_t* list, void* data)
 {
 	assert(NULL != list);
-	return DLLInsertBefore(list, NodeToItr(&list->tail), data);
+	return DLLInsertBefore(list, DLLItrEnd(list), data);
 }
 
 
 void* DLLPopFront(dlist_t* list)
 {
-	void* data = (list->head.next)->data;
-	DLLRemove(NodeToItr(list->head.next));
+	void* data = NULL;
+	assert(NULL != list);
+	data = (list->head.next)->data;
+	DLLRemove(DLLItrBegin(list));
 	return (data);
 }
 
 void* DLLPopBack(dlist_t* list)
 {
-	void* data = (list->tail.prev)->data;
+	void* data = NULL;
+	assert(NULL != list);
+	data = (list->tail.prev)->data;
 	DLLRemove(NodeToItr(list->tail.prev));
 	return (data);
 }
@@ -151,7 +159,7 @@ size_t DLLCount(const dlist_t* list)
 	size_t count = 0;
 	assert(NULL != list);
 
-	DLLForEach(NodeToItr(list->head.next), NodeToItr((node_t*)&list->tail), &NodeCount, &count);
+	DLLForEach(DLLItrBegin(list), DLLItrEnd(list), &NodeCount, &count);
 	return (count);
 }
 
@@ -162,7 +170,7 @@ dlist_itr_t DLLRemove(dlist_itr_t itr)
 	(deleted_node->prev)->next = deleted_node->next;
 	
 	itr = NodeToItr(deleted_node->next);
-	memset(deleted_node, 0, sizeof(*deleted_node));
+	memset(deleted_node, 0, sizeof(node_t));
 	free(deleted_node);
 	return (itr);
 }
@@ -183,7 +191,12 @@ dlist_itr_t DLLFind(dlist_itr_t from, dlist_itr_t to, match_func_t is_match, con
 
 int DLLMultiFind(dlist_itr_t from, dlist_itr_t to, match_func_t is_match, const void* data, dlist_t* output)
 {	
-	node_t* found_node = ItrToNode(DLLFind(from, to, is_match, data));
+	
+	node_t* found_node = NULL;
+	
+	assert(NULL != output);
+	assert(NULL != data);
+	found_node = ItrToNode(DLLFind(from, to, is_match, data));
 	
 	while(!DLLItrIsEqual(NodeToItr(found_node), to))
 	{
@@ -219,10 +232,12 @@ dlist_itr_t DLLInsertBefore(dlist_t* list, dlist_itr_t itr, void* data) /* retur
 {
 	
 	node_t* after_node = ItrToNode(itr);
-	node_t* mid_node = NewNode(data, after_node->prev, after_node);
+	node_t* mid_node = NULL;
 	
-	
+	assert(NULL != data);
 	assert(NULL != list);
+	
+	mid_node = NewNode(data, after_node->prev, after_node);
 	
 	if(NULL == mid_node)
 	{
@@ -251,9 +266,7 @@ int DLLForEach(dlist_itr_t from, dlist_itr_t to, action_func_t action, void* par
 
 static dlist_itr_t NodeToItr(node_t* node)
 {
-	/* NULL CHECK? */
 	return (dlist_itr_t)node;
-	
 }
 static node_t* ItrToNode(dlist_itr_t itr)
 {
@@ -269,7 +282,11 @@ static int NodeCount(void* param1, void* param2)
 
 static node_t* NewNode(void* data, node_t* prev_node, node_t* next_node)
 {
-	node_t* new_node = (node_t*)malloc(sizeof(node_t));
+	node_t* new_node = NULL;
+	assert(NULL != data);
+	
+	new_node = (node_t*)malloc(sizeof(node_t));
+	
 	if(NULL == new_node)
 	{
 		return NULL;

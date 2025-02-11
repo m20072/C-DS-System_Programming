@@ -34,7 +34,6 @@ srt_ll_t* SrtLLCreate(is_before_t is_before)
 	list->dlist = DLLCreate();
 	if(NULL == list->dlist)
 	{
-		memset(list, 0, sizeof(*list));
 		free(list);
 		return NULL;
 	}

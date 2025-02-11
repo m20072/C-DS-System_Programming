@@ -16,7 +16,6 @@
 #include <string.h> /* memset */
 #include "../include/doubly_ll.h"
 
-
 typedef struct node node_t;
 
 struct node
@@ -32,12 +31,10 @@ struct dlist
 	node_t tail;
 };
 
-
 static dlist_itr_t NodeToItr(node_t* node);
 static node_t* ItrToNode(dlist_itr_t itr);
 static node_t* NewNode(void* data, node_t* prev_node, node_t* next_node);
 static int NodeCount(void* param1, void* param2);
-
 
 dlist_t* DLLCreate()
 {
@@ -93,12 +90,14 @@ dlist_itr_t DLLItrEnd(const dlist_t* list)
 dlist_itr_t DLLItrNext(dlist_itr_t itr)
 {
 	node_t* next_node = ItrToNode(itr)->next;
+	assert(NULL != next_node);
 	return (NodeToItr(next_node));
 }
 
 dlist_itr_t DLLItrPrev(dlist_itr_t itr)
 {
 	node_t* prev_node = ItrToNode(itr)->prev;
+	assert(NULL != prev_node);
 	return (NodeToItr(prev_node));
 }
 
@@ -109,6 +108,7 @@ void* DLLGetData(dlist_itr_t itr)
 
 void DLLSetData(dlist_itr_t itr, const void* data)
 {
+	assert(NULL != data);
 	ItrToNode(itr)->data = (void*)data;
 }
 
@@ -125,6 +125,7 @@ int DLLItrIsEqual(dlist_itr_t itr1, dlist_itr_t itr2)
 dlist_itr_t DLLPushFront(dlist_t* list, void* data)
 {
 	assert(NULL != list);
+	assert(NULL != data);
 	return DLLInsertBefore(list, DLLItrBegin(list), data);
 }
 
@@ -132,6 +133,7 @@ dlist_itr_t DLLPushFront(dlist_t* list, void* data)
 dlist_itr_t DLLPushBack(dlist_t* list, void* data)
 {
 	assert(NULL != list);
+	assert(NULL != data);
 	return DLLInsertBefore(list, DLLItrEnd(list), data);
 }
 

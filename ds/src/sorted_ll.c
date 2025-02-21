@@ -28,14 +28,14 @@ srt_ll_t* SrtLLCreate(is_before_t is_before)
 	srt_ll_t* list = (srt_ll_t*)malloc(sizeof(*list));
 	if(NULL == list)
 	{
-		return NULL;
+		return (NULL);
 	}
 	
 	list->dlist = DLLCreate();
 	if(NULL == list->dlist)
 	{
 		free(list);
-		return NULL;
+		return (NULL);
 	}
 	
 	list->is_before = is_before;
@@ -137,8 +137,6 @@ void* SrtLLGetData(srt_itr_t itr)
 
 int SrtLLForEach(srt_itr_t from, srt_itr_t to, action_func_t action, void* param)
 {
-	assert(NULL != action);
-
 	#ifndef NDEBUG
 	if (from.list != to.list)
 	{
@@ -151,9 +149,6 @@ int SrtLLForEach(srt_itr_t from, srt_itr_t to, action_func_t action, void* param
 
 srt_itr_t SrtLLFindIf(srt_itr_t from, srt_itr_t to, match_func_t is_match, void* data)
 {
-	assert(NULL != is_match);
-	assert(NULL != data);
-
 	#ifndef NDEBUG
 	if (from.list != to.list)
 	{
@@ -171,7 +166,6 @@ srt_itr_t SrtLLFind(srt_ll_t* list, void* data)
 	srt_itr_t curr_itr = { 0 };
 	srt_itr_t end_itr = { 0 };
 	assert(NULL != list);
-	assert(NULL != data);
 
 	curr_itr = SrtLLItrBegin(list);
 	end_itr = SrtLLItrEnd(list);
@@ -187,7 +181,6 @@ srt_itr_t SrtLLInsert(srt_ll_t* list, void* data)
 {
 	srt_itr_t struct_itr = { 0 };
 	assert(NULL != list);
-	assert(NULL != data);
 	
 	struct_itr = SrtLLItrBegin(list);
 	
@@ -236,4 +229,3 @@ srt_ll_t* SrtLLMerge(srt_ll_t* dst, srt_ll_t* src)
 	DLLSplice(where.itr, from.itr, to.itr);
 	return dst;
 }
-

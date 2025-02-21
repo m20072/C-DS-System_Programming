@@ -11,6 +11,7 @@
 *   - 
 *
 ******************************************************************************/
+#include <stdlib.h>
 #include <assert.h>
 
 #include "../include/p_queue.h"
@@ -28,13 +29,69 @@ p_queue_t* PQCreate(cmp_func_t cmp_func)
 	p_queue = (p_queue_t*)malloc(sizeof(p_queue_t));
 	if(NULL == p_queue)
 	{
-		return NULL;
+		return (NULL);
 	}
 	
-	p_queue_t->list = SrtLLCreate(cmp_func);
-	if(NULL == p_queue_t->list)
+	p_queue->list = SrtLLCreate(cmp_func);
+	if(NULL == p_queue->list)
 	{
-		return NULL;
+		free(p_queue);
+		p_queue = NULL;
+		return (NULL);
 	}
-	
+	return p_queue;
+}
+
+void PQDestroy(p_queue_t* p_queue)
+{
+	assert(NULL != p_queue);
+	SrtLLDestroy(p_queue->list);
+	p_queue->list = NULL;
+	free(p_queue);
+	p_queue = NULL;
+}
+
+int PQEnqueue(p_queue_t* p_queue, void* data)
+{
+	assert(NULL != p_queue);
+	return SrtLLItrIsEqual(SrtLLInsert(p_queue->list, data), SrtLLItrEnd(p_queue->list));
+}
+
+void PQDequeue(p_queue_t* p_queue)
+{
+	assert(NULL != p_queue);
+	SrtLLPopFront(p_queue->list);
+}
+
+void* PQPeek(const p_queue_t* p_queue)
+{
+	assert(NULL != p_queue);
+	return SrtLLGetData(SrtLLItrBegin(p_queue->list));
+}
+
+int PQIsEmpty(const p_queue_t* p_queue)
+{
+	assert(NULL != p_queue);
+	return SrtLLIsEmpty(p_queue->list);
+}
+
+size_t PQCount(const p_queue_t* p_queue)
+{
+	assert(NULL != p_queue);
+	return (SrtLLCount(p_queue->list));
+}
+
+void PQClear(p_queue_t* p_queue)
+{
+	assert(NULL != p_queue);
+	while(!PQIsEmpty(p_queue))
+	{
+		SrtLLPopFront(p_queue->list);
+	}
+}
+
+void PQRemove(p_queue_t* p_queue, is_match_t is_match, const void* param)
+{
+	assert(NULL != p_queue);
+	SrtLLRemove(SrtLLFindIf(SrtLLItrBegin(p_queue->list), SrtLLItrEnd(p_queue->list), is_match, (void*)param));
 }

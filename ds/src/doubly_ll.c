@@ -38,19 +38,13 @@ static int NodeCount(void* param1, void* param2);
 
 dlist_t* DLLCreate()
 {
-	dlist_t* dlist = (dlist_t*)malloc(sizeof(dlist_t));
+	dlist_t* dlist = (dlist_t*)calloc(sizeof(dlist_t), 1);
 	if(NULL == dlist)
 	{
 		return NULL;
 	}
-	dlist->head.prev = NULL;
 	dlist->head.next = &dlist->tail;
-	dlist->head.data = NULL;
-	
 	dlist->tail.prev = &dlist->head;
-	dlist->tail.next = NULL;
-	dlist->tail.data = NULL;
-	
 	return (dlist);
 }
 
@@ -108,7 +102,6 @@ void* DLLGetData(dlist_itr_t itr)
 
 void DLLSetData(dlist_itr_t itr, const void* data)
 {
-	assert(NULL != data);
 	ItrToNode(itr)->data = (void*)data;
 }
 
@@ -125,7 +118,6 @@ int DLLItrIsEqual(dlist_itr_t itr1, dlist_itr_t itr2)
 dlist_itr_t DLLPushFront(dlist_t* list, void* data)
 {
 	assert(NULL != list);
-	assert(NULL != data);
 	return DLLInsertBefore(list, DLLItrBegin(list), data);
 }
 
@@ -133,7 +125,6 @@ dlist_itr_t DLLPushFront(dlist_t* list, void* data)
 dlist_itr_t DLLPushBack(dlist_t* list, void* data)
 {
 	assert(NULL != list);
-	assert(NULL != data);
 	return DLLInsertBefore(list, DLLItrEnd(list), data);
 }
 
@@ -181,7 +172,6 @@ dlist_itr_t DLLFind(dlist_itr_t from, dlist_itr_t to, match_func_t is_match, con
 {
 	node_t* node_from = ItrToNode(from);
 	assert(NULL != is_match);
-	assert(NULL != data);
 	
 	while(!DLLItrIsEqual(from, to) && 0 == is_match(node_from->data, (void*)data))
 	{
@@ -197,7 +187,6 @@ int DLLMultiFind(dlist_itr_t from, dlist_itr_t to, match_func_t is_match, const 
 	node_t* found_node = NULL;
 	
 	assert(NULL != output);
-	assert(NULL != data);
 	found_node = ItrToNode(DLLFind(from, to, is_match, data));
 	
 	while(!DLLItrIsEqual(NodeToItr(found_node), to))
@@ -236,7 +225,6 @@ dlist_itr_t DLLInsertBefore(dlist_t* list, dlist_itr_t itr, void* data) /* retur
 	node_t* after_node = ItrToNode(itr);
 	node_t* mid_node = NULL;
 	
-	assert(NULL != data);
 	assert(NULL != list);
 	
 	mid_node = NewNode(data, after_node->prev, after_node);
@@ -285,7 +273,6 @@ static int NodeCount(void* param1, void* param2)
 static node_t* NewNode(void* data, node_t* prev_node, node_t* next_node)
 {
 	node_t* new_node = NULL;
-	assert(NULL != data);
 	
 	new_node = (node_t*)malloc(sizeof(node_t));
 	

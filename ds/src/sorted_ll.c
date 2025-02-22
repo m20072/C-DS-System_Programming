@@ -20,10 +20,10 @@
 struct srt_ll
 {
 	dlist_t* dlist;
-	is_before_t is_before;
+	cmp_func_t cmp_func;
 };
 
-srt_ll_t* SrtLLCreate(is_before_t is_before)
+srt_ll_t* SrtLLCreate(cmp_func_t cmp_func)
 {
 	srt_ll_t* list = (srt_ll_t*)malloc(sizeof(*list));
 	if(NULL == list)
@@ -38,7 +38,7 @@ srt_ll_t* SrtLLCreate(is_before_t is_before)
 		return (NULL);
 	}
 	
-	list->is_before = is_before;
+	list->cmp_func = cmp_func;
 	return (list);
 }
 
@@ -170,11 +170,11 @@ srt_itr_t SrtLLFind(srt_ll_t* list, void* data)
 	curr_itr = SrtLLItrBegin(list);
 	end_itr = SrtLLItrEnd(list);
 	
-	while(!SrtLLItrIsEqual(curr_itr, end_itr) && (0 > list->is_before(SrtLLGetData(curr_itr), data)))
+	while(!SrtLLItrIsEqual(curr_itr, end_itr) && (0 > list->cmp_func(SrtLLGetData(curr_itr), data)))
 	{
 		curr_itr = SrtLLItrNext(curr_itr);
 	}
-	return((!SrtLLItrIsEqual(curr_itr, end_itr) && (0 == list->is_before(SrtLLGetData(curr_itr), data))) ? curr_itr : end_itr);
+	return((!SrtLLItrIsEqual(curr_itr, end_itr) && (0 == list->cmp_func(SrtLLGetData(curr_itr), data))) ? curr_itr : end_itr);
 }
 
 srt_itr_t SrtLLInsert(srt_ll_t* list, void* data)
@@ -184,7 +184,7 @@ srt_itr_t SrtLLInsert(srt_ll_t* list, void* data)
 	
 	struct_itr = SrtLLItrBegin(list);
 	
-	while((!SrtLLItrIsEqual(struct_itr, SrtLLItrEnd(list))) && (0 > list->is_before(SrtLLGetData(struct_itr), data)))
+	while((!SrtLLItrIsEqual(struct_itr, SrtLLItrEnd(list))) && (0 > list->cmp_func(SrtLLGetData(struct_itr), data)))
 	{
 		struct_itr = SrtLLItrNext(struct_itr);
 	}
@@ -211,7 +211,7 @@ srt_ll_t* SrtLLMerge(srt_ll_t* dst, srt_ll_t* src)
 	
 	while(!SrtLLItrIsEqual(to, src_end) && !SrtLLItrIsEqual(where, dst_end))
 	{
-		if((0 >= dst->is_before(SrtLLGetData(to), SrtLLGetData(where)))) /* according to dst is_before */
+		if((0 >= dst->cmp_func(SrtLLGetData(to), SrtLLGetData(where)))) /* according to dst is_before */
 		{
 			to = SrtLLItrNext(to);
 		}

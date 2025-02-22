@@ -30,33 +30,31 @@ struct srt_itr
 	#endif
 };
 
-/*******************************USER FUNCTION TYPEDEF************************/
-
-/* is the left value before the right value (sorted) */
-typedef int(*is_before_t)(const void*, const void*);
-
-/* 
-Input: gets 2 elements to compare
-Output: return TRUE or FALSE
-Purpose: user must set his own comparator func for data
-Complexity: o(1)
-*/
-
+/*******************************************************************************/
+/* Purpose: User defined comparator function to define sorting order of the elements.
+ * Receives: Two elements to compare.
+ * Output:
+ * 		- A negative value if the first element should come before the second.
+ *		- Zero if the elements are equal.
+ *		- A positive value if the first element should come after the second.
+ */
+typedef int(*cmp_func_t)(const void* data1, const void* data2);
 /*******************************************************************************/
 
 /*******************************************************************************/
 /* Function: SrtLLCreate.
  * Purpose: Creates and initializes a new sorted (doubly) linked list.
- * Receives: 
+ * Receives: User defined compare function to define sorting order of the elements.
  * Returns: A pointer to the list.
+ * Complexity: O(1).
  */
-srt_ll_t* SrtLLCreate(is_before_t is_before); 
+srt_ll_t* SrtLLCreate(cmp_func_t cmp_func); 
 /*******************************************************************************/
 
 /*******************************************************************************/
 /* Function: SrtLLDestroy.
  * Purpose: Frees all the nodes and the list itself.
- * Receives: A pointer to thelist
+ * Receives: A pointer to the list.
  * Returns: 
  * Complexity: O(1).
  */

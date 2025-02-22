@@ -22,7 +22,7 @@ struct stack
 {
 	size_t capacity;
 	size_t size;
-	void* data;   
+	void* data;
 	size_t element_size;
 };
 

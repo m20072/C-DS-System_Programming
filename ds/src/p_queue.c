@@ -11,8 +11,8 @@
 *   - 
 *
 ******************************************************************************/
-#include <stdlib.h>
-#include <assert.h>
+#include <stdlib.h> /* dynamic allocation, free */
+#include <assert.h> /* assert */
 
 #include "../include/p_queue.h"
 

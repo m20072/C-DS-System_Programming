@@ -14,14 +14,15 @@
 #include <stdlib.h> /* dynamic allocation, free */
 #include <assert.h> /* assert */
 
-#include "../include/p_queue.h"
+#include "../include/sorted_ll.h" /* sorted linked list */
+#include "../include/p_queue.h" /* priority queue header */
 
 struct p_queue
 {
 	srt_ll_t* list;
 };
 
-p_queue_t* PQCreate(cmp_func_t cmp_func)
+p_queue_t* PQCreate(compare_func_t cmp_func)
 {
 	p_queue_t* p_queue = NULL;
 	assert(NULL != cmp_func);
@@ -90,7 +91,7 @@ void PQClear(p_queue_t* p_queue)
 	}
 }
 
-void PQRemove(p_queue_t* p_queue, match_func_t is_match, const void* param)
+void PQRemove(p_queue_t* p_queue, is_match_func_t is_match, const void* param)
 {
 	assert(NULL != p_queue);
 	SrtLLRemove(SrtLLFindIf(SrtLLItrBegin(p_queue->list), SrtLLItrEnd(p_queue->list), is_match, (void*)param));

@@ -15,8 +15,6 @@
 #ifndef __P_QUEUE_H__
 #define __P_QUEUE_H__
 
-#include "../include/sorted_ll.h"
-
 typedef struct p_queue p_queue_t;
 
 /*******************************************************************************/
@@ -27,7 +25,7 @@ typedef struct p_queue p_queue_t;
  *		- Zero if both elements have equal priority.
  *		- A positive value if the first element has lower priority.
  */
-/*typedef int(*cmp_func_t)(const void* data1, const void* data2);*/ /* already defined in sorted_ll */
+typedef int(*compare_func_t)(const void* data1, const void* data2);
 /*******************************************************************************/
 
 /*******************************************************************************/
@@ -37,7 +35,7 @@ typedef struct p_queue p_queue_t;
  *      - param: The parameter used to compare against the element.
  * Output: 1 if the element matches the condition, 0 otherwise.
  */
-/*typedef int (*match_func_t)(const void* data, const void* param);*/ /* already defined in doubly_ll */
+typedef int (*is_match_func_t)(const void* data, const void* param);
 /*******************************************************************************/
 
 /*******************************************************************************/
@@ -47,7 +45,7 @@ typedef struct p_queue p_queue_t;
  * Returns: A pointer to the priority queue.
  * Complexity: O(1).
  */
-p_queue_t* PQCreate(cmp_func_t cmp_func);
+p_queue_t* PQCreate(compare_func_t cmp_func);
 /*******************************************************************************/
 
 /*******************************************************************************/
@@ -137,6 +135,6 @@ void PQClear(p_queue_t* p_queue);
  * Returns: None.
  * Complexity: O(n), where n is the number of elements in the queue.
  */
-void PQRemove(p_queue_t* p_queue, match_func_t is_match, const void* param);
+void PQRemove(p_queue_t* p_queue, is_match_func_t is_match, const void* param);
 /*******************************************************************************/
 #endif

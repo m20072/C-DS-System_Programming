@@ -129,7 +129,7 @@ void PQClear(p_queue_t* p_queue);
 
 /*******************************************************************************/
 /* Function: PQRemove
- * Purpose: Removes an element from the queue based on the user's matching criteria.
+ * Purpose: Removes the first discovered element from the queue that matches the user's specified criteria.
  * Receives:
  *      - p_queue: A pointer to the priority queue.
  *      - is_match: A user-defined match function to match elements for removal.

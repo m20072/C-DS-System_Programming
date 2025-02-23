@@ -8,7 +8,7 @@
 *   Matan Chen
 *
 * Review History:
-*   - 
+*   - Shani
 *
 ******************************************************************************/
 #include <stdlib.h> /* dynamic allocation, free */
@@ -40,7 +40,7 @@ p_queue_t* PQCreate(compare_func_t cmp_func)
 		p_queue = NULL;
 		return (NULL);
 	}
-	return p_queue;
+	return (p_queue);
 }
 
 void PQDestroy(p_queue_t* p_queue)

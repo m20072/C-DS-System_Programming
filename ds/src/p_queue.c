@@ -91,8 +91,14 @@ void PQClear(p_queue_t* p_queue)
 	}
 }
 
-void PQRemove(p_queue_t* p_queue, is_match_func_t is_match, const void* param)
+void* PQRemove(p_queue_t* p_queue, is_match_func_t is_match, const void* param)
 {
+	void* data = NULL;
+	srt_itr_t found_element = { 0 };
 	assert(NULL != p_queue);
-	SrtLLRemove(SrtLLFindIf(SrtLLItrBegin(p_queue->list), SrtLLItrEnd(p_queue->list), is_match, (void*)param));
+
+	found_element = SrtLLFindIf(SrtLLItrBegin(p_queue->list), SrtLLItrEnd(p_queue->list), is_match, (void*)param);
+	data = SrtLLGetData(found_element);
+	SrtLLRemove(found_element);
+	return data;
 }

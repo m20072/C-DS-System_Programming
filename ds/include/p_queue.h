@@ -18,6 +18,7 @@
 #include <stddef.h> /* size_t */
 
 typedef struct p_queue p_queue_t;
+/*typedef struct srt_ll p_queue_t2;*/
 
 /*******************************************************************************/
 /* Purpose: User-defined comparator function to define priority order of elements.
@@ -137,6 +138,6 @@ void PQClear(p_queue_t* p_queue);
  * Returns: None.
  * Complexity: O(n), where n is the number of elements in the queue.
  */
-void PQRemove(p_queue_t* p_queue, is_match_func_t is_match, const void* param);
+void* PQRemove(p_queue_t* p_queue, is_match_func_t is_match, const void* param);
 /*******************************************************************************/
 #endif

@@ -15,6 +15,8 @@
 #ifndef __P_QUEUE_H__
 #define __P_QUEUE_H__
 
+#include <stddef.h> /* size_t */
+
 typedef struct p_queue p_queue_t;
 
 /*******************************************************************************/

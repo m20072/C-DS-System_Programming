@@ -165,6 +165,7 @@ int SchedStart(scheduler_t* scheduler)
                 TaskCleanUp(first_task);
                 TaskDestroy(first_task);
                 SchedClear(scheduler);
+                scheduler->is_running = 0;
                 return (1);
             }
         }

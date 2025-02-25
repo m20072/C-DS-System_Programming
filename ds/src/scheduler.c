@@ -100,6 +100,7 @@ int SchedRemoveTaskByUID(scheduler_t* scheduler, ilrd_uid_t uid)
     {
         return (1);
     }
+    TaskCleanUp(tmp_task);
     TaskDestroy(tmp_task);
     return (0);
 }
@@ -107,10 +108,13 @@ int SchedRemoveTaskByUID(scheduler_t* scheduler, ilrd_uid_t uid)
 /* clear scheduler, O(n)*/
 void SchedClear(scheduler_t* scheduler)
 {
+    task_t* curr_task = NULL;
     assert(NULL != scheduler);
     while(!SchedIsEmpty(scheduler))
     {
-        TaskDestroy((task_t*)PQPeek(scheduler->pq));
+        curr_task = (task_t*)PQPeek(scheduler->pq);
+        TaskCleanUp(curr_task);
+        TaskDestroy(curr_task);
         PQDequeue(scheduler->pq);
     }
 }
@@ -149,7 +153,7 @@ int SchedStart(scheduler_t* scheduler)
         /* if interval was set to -1, destroy the task without enqueueing */
         if(-1 == TaskGetInterval(first_task))
         {
-            /* put here taskclean and remove it from task destroy? */
+            TaskCleanUp(first_task);
             TaskDestroy(first_task);
         }
         else
@@ -157,6 +161,9 @@ int SchedStart(scheduler_t* scheduler)
             TaskSetTime(first_task, time(NULL) + (time_t)TaskGetInterval(first_task));
             if(0 != PQEnqueue(scheduler->pq, first_task))
             {
+                TaskCleanUp(first_task);
+                TaskDestroy(first_task);
+                SchedClear(scheduler);
                 return (1);
             }
         }

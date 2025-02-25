@@ -159,6 +159,7 @@ int SchedStart(scheduler_t* scheduler)
         else
         {
             TaskSetTime(first_task, time(NULL) + (time_t)TaskGetInterval(first_task));
+            /* if a task failed to re-enqueue, clear scheduler and return 1 to indicate failure */
             if(0 != PQEnqueue(scheduler->pq, first_task))
             {
                 TaskCleanUp(first_task);

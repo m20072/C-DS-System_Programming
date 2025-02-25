@@ -105,7 +105,6 @@ int SchedRemoveTaskByUID(scheduler_t* scheduler, ilrd_uid_t uid)
     return (0);
 }
 
-/* clear scheduler, O(n)*/
 void SchedClear(scheduler_t* scheduler)
 {
     task_t* curr_task = NULL;
@@ -119,7 +118,6 @@ void SchedClear(scheduler_t* scheduler)
     }
 }
 
-/* checks if scheduler is empty */
 int SchedIsEmpty(scheduler_t* scheduler)
 {
     assert(NULL != scheduler);
@@ -132,8 +130,6 @@ size_t SchedCount(scheduler_t* scheduler)
     return (PQCount(scheduler->pq));
 }
 
-
-/* set start_time to current global time (once), O(1) */
 int SchedStart(scheduler_t* scheduler)
 {
     task_t* first_task = NULL;

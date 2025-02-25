@@ -79,13 +79,13 @@ ilrd_uid_t SchedAddTask(scheduler_t* scheduler,
     new_task = TaskCreate(time, job_func, job_params, cleanup_func, cleanup_params, interval);
     if(NULL == new_task)
     {
-        return invalid_uid;
+        return (invalid_uid);
     }
     if(1 == PQEnqueue(scheduler->pq, new_task))
     {
         free(new_task);
         new_task = NULL;
-        return invalid_uid;
+        return (invalid_uid);
     }
 
     return (TaskGetUID(new_task));
@@ -100,7 +100,7 @@ int SchedRemoveTaskByUID(scheduler_t* scheduler, ilrd_uid_t uid)
     {
         return (1);
     }
-    TaskCleanUp(tmp_task);
+    TaskCleanUp(tmp_task); /* might be a task that ran job func and re-enqueued, so need clean-up */
     TaskDestroy(tmp_task);
     return (0);
 }

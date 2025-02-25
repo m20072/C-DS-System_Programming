@@ -24,7 +24,7 @@ typedef struct scheduler scheduler_t;
 /* Function: SchedCreate
  * Purpose: Creates and initializes a new scheduler.
  * Receives: None.
- * Returns: A pointer to the new scheduler.
+ * Returns: A pointer to the new scheduler, or NULL on failure.
  * Complexity: O(1).
  */
 scheduler_t* SchedCreate(void);
@@ -52,7 +52,7 @@ void SchedDestroy(scheduler_t* scheduler);
  *   - cleanup_func: Function pointer to cleanup after the job.
  *   - cleanup_params: Parameters for the cleanup function.
  *   - interval: Time interval for repeating tasks (-1 for non-repeating).
- * Returns: A unique identifier (UID) for the added task.
+ * Returns: A unique identifier (UID) for the added task, or invalid_uid if failed.
  * Complexity: O(n).
  */
 ilrd_uid_t SchedAddTask(scheduler_t* scheduler,
@@ -98,7 +98,7 @@ void SchedStop(scheduler_t* scheduler);
 
 /*******************************************************************************/
 /* Function: SchedClear
- * Purpose: Removes all tasks from the scheduler without destroying it.
+ * Purpose: Removes all tasks from the scheduler without destroying it (the scheduler).
  * Receives: A pointer to the scheduler.
  * Returns: None.
  * Complexity: O(n).

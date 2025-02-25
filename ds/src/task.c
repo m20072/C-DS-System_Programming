@@ -12,10 +12,9 @@
 *
 ******************************************************************************/
 #include <stdlib.h> /* dynamic allocation & free */
-#include <assert.h> /* assert */
 #include <string.h> /* memset */
+#include <assert.h> /* assert */
 
-#include "../include/ilrd_uid.h" /* ilrd_uid_t */
 #include "../include/task.h" /* own header */
 
 struct task

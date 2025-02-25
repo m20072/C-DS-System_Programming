@@ -15,8 +15,8 @@
 #ifndef __TASK_H__
 #define __TASK_H__
 
-#include <sys/types.h> /* for ssize_t */
-#include "ilrd_uid.h" /* for ilrd_uid_t */
+#include <sys/types.h> /* ssize_t */
+#include "ilrd_uid.h" /* ilrd_uid_t, time_t */
 
 /*******************************************************************************/
 /* Typedef: job_func_t
@@ -49,6 +49,7 @@ typedef struct task task_t;
  *   - cleanup_params: Parameters for the cleanup function.
  *   - interval: Time interval for repeating tasks (-1 for non-repeating).
  * Returns: A pointer to the created task.
+ * Complexity: O(1).
  */
 task_t* TaskCreate(time_t time, job_func_t job_func, void* job_params,
                     cleanup_func_t cleanup_func, void* cleanup_params,
@@ -60,6 +61,7 @@ task_t* TaskCreate(time_t time, job_func_t job_func, void* job_params,
  * Purpose: Destroys the given task and frees allocated resources.
  * Receives: A pointer to the task.
  * Returns: None.
+ * Complexity: O(1).
  */
 void TaskDestroy(task_t* task);
 /*******************************************************************************/
@@ -69,6 +71,7 @@ void TaskDestroy(task_t* task);
  * Purpose: Retrieves the absolute execution time of the given task.
  * Receives: A pointer to the task.
  * Returns: The absolute execution time of the task.
+ * Complexity: O(1).
  */
 time_t TaskGetTime(task_t* task);
 /*******************************************************************************/
@@ -80,6 +83,7 @@ time_t TaskGetTime(task_t* task);
  *   - task: A pointer to the task.
  *   - time: The new absolute execution time to set.
  * Returns: None.
+ * Complexity: O(1).
  */
 void TaskSetTime(task_t* task, time_t time);
 /*******************************************************************************/
@@ -89,6 +93,7 @@ void TaskSetTime(task_t* task, time_t time);
  * Purpose: Retrieves the unique identifier (UID) of the given task.
  * Receives: A pointer to the task.
  * Returns: The UID of the task.
+ * Complexity: O(1).
  */
 ilrd_uid_t TaskGetUID(task_t* task);
 /*******************************************************************************/
@@ -98,6 +103,7 @@ ilrd_uid_t TaskGetUID(task_t* task);
  * Purpose: Executes the job function of the task.
  * Receives: A pointer to the task.
  * Returns: The interval for the next execution, or -1 if not to be repeated.
+ * Complexity: The user's job function complexity.
  */
 ssize_t TaskRun(task_t* task);
 /*******************************************************************************/
@@ -107,6 +113,7 @@ ssize_t TaskRun(task_t* task);
  * Purpose: Executes the cleanup function of the task.
  * Receives: A pointer to the task.
  * Returns: None.
+ * Complexity: The user's job function complexity.
  */
 void TaskCleanUp(task_t* task);
 /*******************************************************************************/
@@ -116,6 +123,7 @@ void TaskCleanUp(task_t* task);
  * Purpose: Retrieves the interval of the task.
  * Receives: A pointer to the task.
  * Returns: The interval of the task.
+ * Complexity: O(1).
  */
 ssize_t TaskGetInterval(task_t* task);
 /*******************************************************************************/
@@ -127,6 +135,7 @@ ssize_t TaskGetInterval(task_t* task);
  *   - task: A pointer to the task.
  *   - interval: The new interval to set.
  * Returns: None.
+ * Complexity: O(1).
  */
 void TaskSetInterval(task_t* task, ssize_t interval);
 /*******************************************************************************/

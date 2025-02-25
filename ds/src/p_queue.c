@@ -99,6 +99,11 @@ void* PQRemove(p_queue_t* p_queue, is_match_func_t is_match, const void* param)
 
 	found_element = SrtLLFindIf(SrtLLItrBegin(p_queue->list), SrtLLItrEnd(p_queue->list), is_match, (void*)param);
 	data = SrtLLGetData(found_element);
-	SrtLLRemove(found_element);
-	return data;
+
+	/*dont remove tail if its what was returned */
+	if(!SrtLLItrIsEqual(found_element, SrtLLItrEnd(p_queue->list)))
+	{
+		SrtLLRemove(found_element);
+	}
+	return (data);
 }

@@ -33,7 +33,7 @@ typedef struct
 } ilrd_uid_t;
 
 /* Represents an invalid UID instance. */
-extern const ilrd_uid_t invalid_id;
+extern const ilrd_uid_t invalid_uid;
 
 /*******************************************************************************/
 /* Function: CreateUID.

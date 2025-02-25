@@ -135,7 +135,8 @@ void PQClear(p_queue_t* p_queue);
  *      - p_queue: A pointer to the priority queue.
  *      - is_match: A user-defined match function to match elements for removal.
  *      - param: The parameter used for matching.
- * Returns: None.
+ * Returns: Data of the removed element.
+ * Undefined Behavior: 
  * Complexity: O(n), where n is the number of elements in the queue.
  */
 void* PQRemove(p_queue_t* p_queue, is_match_func_t is_match, const void* param);

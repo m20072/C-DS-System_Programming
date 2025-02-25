@@ -22,7 +22,7 @@
 
 static size_t counter = 0;
 static uint32_t GetIpAddr();
-const ilrd_uid_t invalid_id = { 0 };
+const ilrd_uid_t invalid_uid = { 0 };
 
 ilrd_uid_t CreateUID(void)
 {
@@ -30,7 +30,15 @@ ilrd_uid_t CreateUID(void)
 	uid.counter = ++counter;
 	uid.pid = getpid();
 	uid.time = time(NULL);
+    if(uid.time == (time_t)-1)
+    {
+        return invalid_uid;
+    }
 	uid.ip_addr = GetIpAddr();
+    if(uid.ip_addr == (in_addr_t)0)
+    {
+        return invalid_uid;
+    }
 	return uid;
 }
 

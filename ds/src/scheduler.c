@@ -171,11 +171,6 @@ void SchedStop(scheduler_t* scheduler)
     scheduler->is_running = 0;
 }
 
-/*static int CmpTime(const void* task_time, const void* curr_time)
-{
-    return (*(time_t*) task_time - *(time_t*) curr_time);
-}*/
-
 static int CmpTime(const void* task1, const void* task2)
 {
     return (TaskGetTime((task_t*)task1) - TaskGetTime((task_t*)task2));

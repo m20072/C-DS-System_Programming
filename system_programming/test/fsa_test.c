@@ -172,16 +172,16 @@ void TestFSAFree()
     FSAFree(fsa, block2);
     block2 = FSAAllocate(fsa);
     
-    if(*(size_t*)block2 != 40)
-    {
-    	printf(RED "FSAFree FAILED: Problem with free\n" UNFORMAT);
-    	--result;
+	if (*(size_t*)block2 != 40)
+	{
+		printf(RED "FSAFree FAILED: Problem with free\n" UNFORMAT);
+		--result;
 	}
 	else
 	{
 		printf(GREEN "FSAFree PASSED\n" UNFORMAT);
 	}
-	
+
     free(memory);
 }
 

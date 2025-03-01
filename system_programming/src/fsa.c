@@ -48,15 +48,20 @@ fsa_t* FSAInit(void* memory, size_t memory_size, size_t block_size)
         return NULL;
     }
 
+    /* set header offset to first block (right after the struct size) */
     fsa->block_header = FSA_SIZE;
+
+    /* runner starting from first block */
     block_runner = (size_t*)((char*)memory + FSA_SIZE);
     
+    /* iterate through all blocks except last, and set metadata to offset of next (free) block */
     for(i = 1; i < total_blocks; ++i)
     {
         *block_runner = FSA_SIZE + (block_size * i);
         block_runner = (size_t*)((char*)block_runner + block_size);
     }
 
+    /* set last block metadata to offset of 0, indicating no next free block */
     *block_runner = (size_t)0;
     return (fsa);
 }

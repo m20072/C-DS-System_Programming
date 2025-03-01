@@ -8,7 +8,7 @@
 *   Matan Chen
 *
 * Review History:
-*   - 
+*   - Gil
 *
 ******************************************************************************/
 #include <stdlib.h> /* dynamic allocation & free */

@@ -15,7 +15,7 @@
 #ifndef __VSA_H__
 #define __VSA_H__
 
-#include <stddef.h>
+#include <stddef.h> /* size_t */
 
 typedef struct vsa vsa_t;
 

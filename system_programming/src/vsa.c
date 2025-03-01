@@ -11,8 +11,8 @@
 *   - 
 *
 ******************************************************************************/
-#include  <assert.h>
-#include "../include/vsa.h"
+#include  <assert.h> /* assert */
+#include "../include/vsa.h" /* own header */
 struct vsa
 {
     long block_size;

@@ -41,7 +41,6 @@ fsa_t* FSAInit(void* memory, size_t memory_size, size_t block_size)
     size_t aligned_block_size = ALIGN_SIZE(block_size);
     total_blocks = ((memory_size - FSA_SIZE) / aligned_block_size);
 
-    assert(NULL != memory);
 
     if(NULL == memory || 0 == block_size || memory_size < aligned_block_size + FSA_SIZE)
     {

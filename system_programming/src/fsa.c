@@ -38,12 +38,12 @@ fsa_t* FSAInit(void* memory, size_t memory_size, size_t block_size)
     size_t total_blocks = 0;
     size_t* block_runner = NULL;
     size_t i = 0;
-    block_size = ALIGN_SIZE(block_size);
-    total_blocks = ((memory_size - FSA_SIZE) / block_size);
+    size_t aligned_block_size = ALIGN_SIZE(block_size);
+    total_blocks = ((memory_size - FSA_SIZE) / aligned_block_size);
 
     assert(NULL != memory);
 
-    if(memory_size < block_size)
+    if(NULL == memory || 0 == block_size || memory_size < aligned_block_size + FSA_SIZE)
     {
         return NULL;
     }
@@ -57,8 +57,8 @@ fsa_t* FSAInit(void* memory, size_t memory_size, size_t block_size)
     /* iterate through all blocks except last, and set metadata to offset of next (free) block */
     for(i = 1; i < total_blocks; ++i)
     {
-        *block_runner = FSA_SIZE + (block_size * i);
-        block_runner = (size_t*)((char*)block_runner + block_size);
+        *block_runner = FSA_SIZE + (aligned_block_size * i);
+        block_runner = (size_t*)((char*)block_runner + aligned_block_size);
     }
 
     /* set last block metadata to offset of 0, indicating no next free block */
@@ -75,7 +75,7 @@ void* FSAAllocate(fsa_t* fsa)
 	{
 		return (NULL);
 	}
-    
+
     free_block = (size_t*)((char*)fsa + fsa->block_header);
 	fsa->block_header = *free_block;
 	return (free_block);

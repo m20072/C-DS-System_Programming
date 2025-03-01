@@ -29,7 +29,7 @@ struct fsa
 
 size_t FSASuggestSize(size_t block_size, size_t num_blocks)
 {
-    return (FSA_SIZE + (ALIGN_SIZE(block_size) * num_blocks)); /* fsa struct and word size aligned blocks of meta data size at least */
+    return (FSA_SIZE + (ALIGN_SIZE(block_size) * num_blocks)); /* fsa struct and word size aligned blocks of meta-data size at least */
 }
 
 fsa_t* FSAInit(void* memory, size_t memory_size, size_t block_size)
@@ -43,13 +43,13 @@ fsa_t* FSAInit(void* memory, size_t memory_size, size_t block_size)
 
     assert(NULL != memory);
 
-    if(0 == block_size || memory_size < block_size)
+    if(memory_size < block_size)
     {
         return NULL;
     }
 
     fsa->block_header = FSA_SIZE;
-    block_runner = (size_t*)((char*)memory + fsa->block_header);
+    block_runner = (size_t*)((char*)memory + FSA_SIZE);
     
     for(i = 1; i < total_blocks; ++i)
     {
@@ -66,12 +66,11 @@ void* FSAAllocate(fsa_t* fsa)
 	size_t* free_block = NULL;
 
     assert(NULL != fsa);
-    free_block = (size_t*)((char*)fsa + fsa->block_header);
-	
 	if (0 == fsa->block_header) /* no free blocks */
 	{
 		return (NULL);
 	}
+    free_block = (size_t*)((char*)fsa + fsa->block_header);
 	fsa->block_header = *free_block;
 	return (free_block);
 }
@@ -79,17 +78,18 @@ void* FSAAllocate(fsa_t* fsa)
 size_t FSACountFree(fsa_t* fsa)
 {
     size_t count = 0;
-    size_t* block_runner = NULL;
+    char* block_runner = NULL;
 
     assert(NULL != fsa);
-    block_runner = (size_t*)((char*)fsa + fsa->block_header);
+    block_runner = (char*)fsa + fsa->block_header;
 
-    while(0 != *block_runner)
+    /* fsa == block_runner when next block offset of previous iteration was 0 */
+    while((char*)fsa != block_runner)
     {
-        block_runner = (size_t*)((char*)fsa + *block_runner);
+        block_runner = (char*)fsa + *block_runner;
         ++count;
     }
-    return (++count);
+    return (count);
 }
 
 void FSAFree(fsa_t* fsa, void* block)
@@ -100,6 +100,9 @@ void FSAFree(fsa_t* fsa, void* block)
         return;
     }
 
+    /* write into freed block the next available block */
 	*(size_t*)block = fsa->block_header;
+
+    /* next available block is now the freed block */
 	fsa->block_header = (size_t)block - (size_t)fsa;
 }

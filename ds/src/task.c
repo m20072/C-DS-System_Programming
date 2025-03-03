@@ -40,7 +40,7 @@ task_t* TaskCreate(time_t time,
     assert(job_func);
     assert(cleanup_func);
 
-    new_task = (task_t*)calloc(sizeof(task_t), 1);
+    new_task = (task_t*)calloc(1, sizeof(task_t));
     if(NULL == new_task)
     {
         return NULL;
@@ -49,6 +49,7 @@ task_t* TaskCreate(time_t time,
     new_task->uid = CreateUID();
     if(CompareUID(new_task->uid, invalid_uid))
     {
+        free(new_task);
         return NULL;
     }
     new_task->time = time;

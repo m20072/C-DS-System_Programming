@@ -25,6 +25,20 @@ size_t NumCoupleSetBitsInByte(unsigned char byte)
     return count;
 }
 
+size_t NumCoupleSetBitsInBytev2(unsigned char byte)
+{
+    size_t counter = 0;
+    while(0 != byte)
+    {
+        if((byte & 0x3) == 0x3)
+        {
+            ++counter;
+        }
+        byte = byte >> 1;
+    }
+    return (counter);
+}
+
 size_t NumSetBitsLong(long num)
 {
     size_t count = 0;

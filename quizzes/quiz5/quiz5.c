@@ -37,3 +37,32 @@ result_ty MaxStockProfit(const int prices[], size_t size)
     
     return result;
 }
+
+
+result_ty MaxStockProfitv2(const int prices[], size_t size)
+{
+    result_ty result = {0};
+    
+    /* ### Write your code below this line ### */
+    size_t i = 0; /* buy ptr */
+    size_t j = 1; /* sell ptr */
+    int best_sum = 0;
+    int sum = 0;
+    
+    while(j < size)
+    {
+        sum = prices[j] - prices[i];
+        if(best_sum < sum)
+        {
+            best_sum = sum;
+            result.buy_index = i;
+            result.sell_index = j;
+        }
+        else if(sum < 0)
+        {
+            i = j;
+        }
+        ++j;
+    }
+    return result;
+}

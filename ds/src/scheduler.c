@@ -34,7 +34,7 @@ static int IsUIDMatch(const void* p_task, const void* p_uid);
 
 scheduler_t* SchedCreate(void)
 {
-    scheduler_t* scheduler = (scheduler_t*)calloc(sizeof(scheduler_t), 1);
+    scheduler_t* scheduler = (scheduler_t*)calloc(1, sizeof(scheduler_t));
     if(NULL == scheduler)
     {
         return NULL;
